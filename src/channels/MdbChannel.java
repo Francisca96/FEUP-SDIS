@@ -7,4 +7,8 @@ import java.util.Arrays;
 
 public class MdbChannel extends Channel{
 
+    MdbChannel(String address, String port_number) throws IOException {
+        super(adress,port_number);
+    }
+
 }
