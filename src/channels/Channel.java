@@ -7,6 +7,7 @@ import java.util.Arrays;
 
 public class Channel{
 
+    Thread thread;
     MulticastSocket socket;
     InetAddress addr;
     private int port;
