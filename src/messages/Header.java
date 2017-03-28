@@ -19,4 +19,54 @@ public class Header {
         this.chunkNo = chunkNo;
         this.replicationDeg = replicationDeg;
     }
+
+    //GETTERS AND SETTERS
+    public static String getMessageType() {
+        return messageType;
+    }
+
+    public static void setMessageType(String messageType) {
+        Header.messageType = messageType;
+    }
+
+    public static String getVersion() {
+        return version;
+    }
+
+    public static void setVersion(String version) {
+        Header.version = version;
+    }
+
+    public static int getSenderId() {
+        return senderId;
+    }
+
+    public static void setSenderId(int senderId) {
+        Header.senderId = senderId;
+    }
+
+    public static String getFileId() {
+        return fileId;
+    }
+
+    public static void setFileId(String fileId) {
+        Header.fileId = fileId;
+    }
+
+    public static int getChunkNo() {
+        return chunkNo;
+    }
+
+    public static void setChunkNo(int chunkNo) {
+        Header.chunkNo = chunkNo;
+    }
+
+    public static int getReplicationDeg() {
+        return replicationDeg;
+    }
+
+    public static void setReplicationDeg(int replicationDeg) {
+        Header.replicationDeg = replicationDeg;
+    }
+
 }
