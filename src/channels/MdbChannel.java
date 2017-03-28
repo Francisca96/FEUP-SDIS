@@ -1,9 +1,12 @@
 package channels;
 
 import java.io.IOException;
+import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.util.Arrays;
+
+import messages.Header;
 
 public class MdbChannel extends Channel{
 
@@ -20,12 +23,12 @@ public class MdbChannel extends Channel{
                     socket.joinGroup(addr);
                     //separate header and body from data
                     byte[] buf = new byte[64 * 1000];
-                    DatagramPacket packet = new DatagramPacket(rbuf, rbuf.length);
+                    DatagramPacket packet = new DatagramPacket(buf, buf.length);
                     socket.receive(packet);
-                    String data = new String(paclet.getData(), 0, packet.getLength());
+                    String data = new String(packet.getData(), 0, packet.getLength());
 
                     //Separete Header
-                    String[] dataArray = received.split("\\r\\n\\r\\n");
+                    String[] dataArray = data.split("\\r\\n\\r\\n");
                     Header header = getHeader(dataArray);
 
                     //Separete Body
@@ -37,7 +40,13 @@ public class MdbChannel extends Channel{
 
                     socket.leaveGroup(addr);
                 }
-                catch (IOException | InterruptedException e) {
+                /*
+                 *
+                 * tratar exceçoes no handlle
+                 *
+                 */
+
+                catch (IOException  | InterruptedException e) {
                     e.printStackTrace();
                 }
             }
@@ -45,19 +54,33 @@ public class MdbChannel extends Channel{
         }
     }
 
+
+    //Gets a byte[] from a determined index to the end - USE TO BODY
+    private byte[] getArrayFromOffset(byte[] data, int offsetOfBody, int length) {
+        int size = length - offsetOfBody;
+        byte[] toRet = new byte[size];
+
+        for(int i = offsetOfBody; i < length; i++) {
+            toRet[i - offsetOfBody] = data[i];
+        }
+
+        return toRet;
+    }
+
+    //USE TO HEADER
     public Header getHeader(String[] dataArray){
         String headerMsg = dataArray[0];
         String[] headerTokens = headerMsg.split("\\s+");
         String messageType = headerTokens[0];
         String version = headerTokens[1];
-        int senderId = headerTokens[2];
+        int senderId = Integer.parseInt(headerTokens[2]);
         String fileId = headerTokens[3];
-        int ChunkNo = headerTokens[4];
+        int ChunkNo = Integer.parseInt(headerTokens[4]);
         int replicationDeg;
         if(headerTokens.length >= 6)
-            replicationDeg = headerTokens[5];
+            replicationDeg = Integer.parseInt(headerTokens[5]);
         else
-            replicationDeg = "";
+            replicationDeg = Integer.parseInt("");
 
         return new Header(messageType,version,senderId,fileId,ChunkNo,replicationDeg);
     }
