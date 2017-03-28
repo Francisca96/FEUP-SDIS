@@ -8,14 +8,15 @@ import java.util.Arrays;
 public class Channel{
 
     MulticastSocket socket;
-    InetAddress address;
-    private int port_number;
+    InetAddress addr;
+    private int port;
 
-    Channel(String address, String port_number) throws IOException {
-        this.address = InetAddress.getByName(address);
-        this.port_numer = Integer.parseInt(port_number);
-        this.socket = new MulticastSocket(this.port_number);
-        //this.socket.setTimeToLive(1);
+    public Channel(InetAddress addr, int port) throws IOException {
+        this.addr = addr;
+        this.port = port;
+        this.socket = new MulticastSocket(this.port);
+
+        //The initiator-peer collects the confirmation messages during a time interval of 1 second.
+        this.socket.setTimeToLive(1);
     }
-
 }

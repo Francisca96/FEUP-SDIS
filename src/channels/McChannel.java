@@ -7,8 +7,8 @@ import java.util.Arrays;
 
 public class McChannel extends Channel{
 
-    McChannel(String address, String port_number) throws IOException {
-        super(adress,port_number);
+    public McChannel(InetAddress addr, int port) throws IOException {
+        super(addr, port);
     }
 
 }
