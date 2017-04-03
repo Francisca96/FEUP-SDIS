@@ -1,7 +1,11 @@
 import channels.*;
+import subprotocols.Backup;
+
 import java.io.IOException;
+import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 
 /**
@@ -22,19 +26,44 @@ public class Peer {
     private static McChannel mcChannel;
     private static MdbChannel mdbChannel;
     private static MdrChannel mdrChannel;
-    //Socket
-    private static DatagramSocket socket;
 
     private static void main(String[] args) throws IOException {
         if(!checkArguments(args)){
             return;
         }
 
-        socket = new DatagramSocket(peerId);
-
         mcChannel = new McChannel(mcAddr, mcPort);
         mdbChannel = new MdbChannel(mcAddr, mcPort);
         mdrChannel = new MdrChannel(mcAddr, mcPort);
+
+
+        //Channel Listening
+        mcChannel.thread.start();
+        mdbChannel.thread.start();
+        mdrChannel.thread.start();
+
+        protocoles();
+
+    }
+
+    private static void protocoles() throws IOException {
+        DatagramSocket socket = new DatagramSocket(peerId);
+        String protocole ="";
+        while(true){
+            byte[] buf = new byte[256];
+            DatagramPacket packet = new DatagramPacket(buf, buf.length);
+            socket.receive(packet);
+            protocole = new String(packet.getData(), 0, packet.getLength());
+            String[] protocoleArray = protocole.split("\\s+");
+            switch(protocoleArray[0]){
+                case "BACKUP":
+                    Backup backup = new Backup(protocoleArray[1], Integer.parseInt(protocoleArray[2]));
+                    backup.start();
+                    break;
+                default:
+                    break;
+            }
+        }
 
     }
 
