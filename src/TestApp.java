@@ -10,6 +10,8 @@ import java.rmi.registry.LocateRegistry;
 public class TestApp {
     private static String peer_ap;
     private static String remote_obj_name;
+    private static String file_name;
+    private static int replication_deg;
 
     public static void main(String[] args) throws IOException {
         if(!checkArguments(args)){
@@ -20,19 +22,19 @@ public class TestApp {
         Registry registry = LocateRegistry.getRegistry("localhost");
 
         try {
-            service = (Services) registry.lookup(peer_ap);
+            service = (Services) registry.lookup(remote_obj_name);
             switch(remote_obj_name) {
                 case "BACKUP":
-                    service.backup();
+                    service.backup(file_name, replication_deg);
                     break;
                 case "RESTORE":
-                    service.restore();
+                    service.restore(file_name);
                     break;
                 case "DELETE":
-                    service.delete();
+                    service.delete(file_name);
                     break;
                 case "MANAGE":
-                    service.manage();
+                    service.manage(file_name);
                     break;
                 case "STATE":
                     service.state();
@@ -54,6 +56,27 @@ public class TestApp {
 
         setPeer_ap(args[0]);
         setRemote_obj_name(args[1]);
+
+        switch(remote_obj_name) {
+            case "BACKUP":
+                file_name = args[2];
+                replication_deg = Integer.parseInt(args[3]);
+                break;
+            case "RESTORE":
+                file_name = args[2];
+                break;
+            case "DELETE":
+                file_name = args[2];
+                break;
+            case "MANAGE":
+                file_name = args[2];
+                break;
+            case "STATE":
+                break;
+            default:
+                System.out.println("Invalid Subprotocol");
+                System.exit(-1);
+        }
 
         return true;
     }

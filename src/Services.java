@@ -6,9 +6,13 @@ import java.rmi.RemoteException;
  */
 public interface Services extends Remote {
 
-    public void backup() throws RemoteException;
-    public void restore() throws RemoteException;
-    public void delete() throws RemoteException;
-    public void manage() throws RemoteException;
-    public void state() throws RemoteException;
+    String backup(String file_name, int replication_deg) throws RemoteException;
+
+    String restore(String file_name) throws RemoteException;
+
+    String delete(String file_name) throws RemoteException;
+
+    String manage(String file_name) throws RemoteException;
+
+    String state() throws RemoteException;
 }
