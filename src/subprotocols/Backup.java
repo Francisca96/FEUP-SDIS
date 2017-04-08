@@ -18,17 +18,17 @@ import utilities.Header;
  * Created by Francisca on 28/03/17.
  */
 public class Backup extends Thread {
-    private File file;
-    private int replicationDeg;
+    private File file_name;
+    private int replication_deg;
 
     public Backup(String fileName, int replicationDeg) {
-        this.file = new File("../res/"+fileName);
-        this.replicationDeg = replicationDeg;
+        this.file_name = new File("../res/"+fileName);
+        this.replication_deg = replicationDeg;
     }
 
     public void run() {
     	try{
-    		byte[] fileData = Files.readAllBytes(file.toPath());
+    		byte[] fileData = Files.readAllBytes(file_name.toPath());
     		sendAllChunks(fileData);
     	}catch(IOException e){
     		System.out.println("The file doesn't exist.");
@@ -37,14 +37,14 @@ public class Backup extends Thread {
 
     private void sendAllChunks(byte[] fileData) throws IOException {
 		//Create Root for file
-    	FileInputStream inputStream = new FileInputStream("../res/" + file.getName());
+    	FileInputStream inputStream = new FileInputStream("../res/" + file_name.getName());
     	
     	//Buf with the max chunk size
     	byte[] buf = new byte[64000];
-    	String fileId = getFileId(file);
+    	String fileId = getFileId(file_name);
     	
     	String version = "1.0";
-		Header header = new Header("PUTCHUNK", version, Peer.getPeerId(), fileId, 0, replicationDeg);
+		Header header = new Header("PUTCHUNK", version, Peer.getPeerId(), fileId, 0, replication_deg);
 		
 		int bytesRead = 0;
 		int numberOfChunks = 0;
@@ -56,9 +56,9 @@ public class Backup extends Thread {
 			numberOfChunks++;
 		}
 		
-		if (Peer.getData().getBackedUpFiles().get(file.getName()) == null) {
+		if (Peer.getData().getBackedUpFiles().get(file_name.getName()) == null) {
 			Peer.getData();
-			Peer.getData().getBackedUpFiles().markAsBackedUp(file.getName(), new FileInfo(file.getName(), fileId, numberOfChunks, file.length()));
+			Peer.getData().getBackedUpFiles().markAsBackedUp(file_name.getName(), new FileInfo(file_name.getName(), fileId, numberOfChunks, file_name.length()));
 		}
 		inputStream.close();
 		System.out.println("File backup done!");
