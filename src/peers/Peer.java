@@ -37,7 +37,7 @@ public class Peer {
     
     private static DataBase data;
 
-    private static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
         if(!checkArguments(args)){
             return;
         }
@@ -46,11 +46,12 @@ public class Peer {
         mdbChannel = new MdbChannel(mcAddr, mcPort);
         mdrChannel = new MdrChannel(mcAddr, mcPort);
 
-
         //Channel Listening
-        mcChannel.thread.start();
+        //mcChannel.thread.start();
         mdbChannel.thread.start();
-        mdrChannel.thread.start();
+        //mdrChannel.thread.start();
+
+        System.out.println("\noi");
 
         loadData();
         protocoles();
