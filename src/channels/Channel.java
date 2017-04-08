@@ -5,6 +5,8 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.util.Arrays;
 
+import utilities.Header;
+
 public class Channel{
 
     public Thread thread;
@@ -52,5 +54,35 @@ public class Channel{
 	public void setPort(int port) {
 		this.port = port;
 	}
+	
+    //Gets a byte[] from a determined index to the end - USE TO BODY
+    public byte[] getArrayFromOffset(byte[] data, int offsetOfBody, int length) {
+        int size = length - offsetOfBody;
+        byte[] toRet = new byte[size];
+
+        for(int i = offsetOfBody; i < length; i++) {
+            toRet[i - offsetOfBody] = data[i];
+        }
+
+        return toRet;
+    }
+
+    //USE TO HEADER
+    public Header getHeader(String[] dataArray){
+        String headerMsg = dataArray[0];
+        String[] headerTokens = headerMsg.split("\\s+");
+        String messageType = headerTokens[0];
+        String version = headerTokens[1];
+        int senderId = Integer.parseInt(headerTokens[2]);
+        String fileId = headerTokens[3];
+        int ChunkNo = Integer.parseInt(headerTokens[4]);
+        int replicationDeg;
+        if(headerTokens.length >= 6)
+            replicationDeg = Integer.parseInt(headerTokens[5]);
+        else
+            replicationDeg = Integer.parseInt("");
+
+        return new Header(messageType,version,senderId,fileId,ChunkNo,replicationDeg);
+    }
     
 }

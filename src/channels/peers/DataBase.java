@@ -115,30 +115,6 @@ public class DataBase {
 		}
 		
 	}
-
-	public boolean chunkIsStored(String fileId, int chunkNo) {
-		ChunksList chunksList = chunksSaved.get(fileId) != null ? chunksSaved.get(fileId) : null;
-		if (chunksList == null) {
-			System.out.println("chunksList not found");
-			return false;
-		}
-		for (int i = 0; i < chunksList.size(); i++)  {
-			if (chunksList.get(i).getChunkNo() == chunkNo)
-				return true;
-		}
-		System.out.println("ChunkNo not found");
-		return false;
-	}
-
-	public void addToReceivedStoreMessages(Header header) {
-		Chunk chunk = new Chunk(header);
-		ArrayList<Header> headers = receivedStoreMessages.get(chunk) != null ? receivedStoreMessages.get(chunk) : new ArrayList<Header>();
-		if(!headers.contains(header)) {
-			headers.add(header);
-			receivedStoreMessages.put(chunk, headers);
-		}
-		
-	}
 	
 	
 

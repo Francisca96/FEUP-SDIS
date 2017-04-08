@@ -10,11 +10,11 @@ import peers.Peer;
 
 public class ChunkManage {
 	private Message message;
-	private ArrayList<Header> validReplies;
+	private ArrayList<Header> valid_replies;
 	
 	public ChunkManage(Header header, byte[] body) {
 		this.message = new Message(Peer.getMdbChannel().getSocket(), Peer.getMdbChannel().getAddr(), header, body);
-		this.validReplies = new ArrayList<>();
+		this.valid_replies = new ArrayList<>();
 	}
 
 	public void sendChunk() {
@@ -58,7 +58,7 @@ public class ChunkManage {
 					break;
 				}
 			}
-			chunkInfo.addToStoredHeaders(validReplies);
+			chunkInfo.addToStoredHeaders(valid_replies);
 			if (!chunksList.contains(chunkInfo))
 				chunksList.add(chunkInfo);
 			
@@ -75,7 +75,7 @@ public class ChunkManage {
 			return false;
 		if (replyHeader.getChunkNo() != message.getHeader().getChunkNo())
 			return false;
-		validReplies.add(replyHeader);
+		valid_replies.add(replyHeader);
 		return true;
 	}
 }
