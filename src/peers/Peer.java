@@ -37,7 +37,7 @@ public class Peer {
     
     private static DataBase data;
 
-    private static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
         if(!checkArguments(args)){
             return;
         }
