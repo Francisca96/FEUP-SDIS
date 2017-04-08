@@ -2,6 +2,7 @@ package peers;
 
 import channels.*;
 import subprotocols.Backup;
+import subprotocols.Delete;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -116,6 +117,10 @@ public class Peer {
                     Backup backup = new Backup(protocoleArray[1], Integer.parseInt(protocoleArray[2]));
                     backup.start();
                     break;
+                case "DELETE":
+                	Delete delete = new Delete(protocoleArray[1]);
+                	delete.start();
+                	break;
                 default:
                     break;
             }

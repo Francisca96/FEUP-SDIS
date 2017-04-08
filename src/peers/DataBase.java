@@ -3,6 +3,9 @@ package peers;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -136,6 +139,18 @@ public class DataBase {
 		if(!headers.contains(header)) {
 			headers.add(header);
 			receivedStoreMessages.put(chunk, headers);
+		}
+		
+	}
+
+	public byte[] getChunkBody(String fileId, int chunkNo) throws IOException {
+		Path restorableChunk = Paths.get(chunks.getPath() + "/" + fileId + "/" + chunkNo + ".data");
+		return Files.readAllBytes(restorableChunk);
+	}	
+
+	public void clearStoredChunks(Header header) {
+		if (chunksSaved.get(header.getFileId()) != null) {
+			chunksSaved.remove(header.getFileId());
 		}
 		
 	}

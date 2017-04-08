@@ -1,11 +1,13 @@
 package channels;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.ThreadLocalRandom;
 
 import peers.Peer;
 import utilities.Header;
@@ -54,24 +56,38 @@ public class McChannel extends Channel{
 								System.out.println("Chunk is not stored");
 								break;
 							}
-							handleGetChunk(header);
+							getChunk(header);
 							break;
 						case "STORED":
 							storedReplies.add(message);
 							Peer.getData().addToReceivedStoreMessages(header);
 							break;
+						case "DELETE":
+							delete(message);
+							break;
+							
 						}
 					} 
 					socket.leaveGroup(addr);
-				} catch (IOException e) {
+				} catch (IOException | InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
 		}
 
-		private void handleGetChunk(Header header) {
-			// TODO Auto-generated method stub
-			
+		private void delete(Message message) {
+			Header header = message.getHeader();
+			Peer.getData().clearStoredChunks(header);
+			File file =  new File("../res/" + "chunks_" + Peer.getPeerId() + "/" + header.getFileId() + "/");
+		}
+
+		private void getChunk(Header header) throws InterruptedException, IOException {
+			byte[] body = Peer.getData().getChunkBody(header.getFileId(), header.getChunkNo());		
+			Header replyHeader = new Header("CHUNK", "1.0", Peer.getPeerId(), header.getFileId(), header.getChunkNo(), 0);
+			Message reply = new Message(Peer.getMdrChannel().getSocket(), Peer.getMdrChannel().getAddr(), replyHeader, body);
+			int timeout = ThreadLocalRandom.current().nextInt(0, 400);
+			Thread.sleep(timeout);
+			new Thread(reply).start();
 		}
 	}
 
