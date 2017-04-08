@@ -11,11 +11,11 @@ import peers.Peer;
 import utilities.Header;
 import utilities.Message;
 
-public class McChannel extends Channel {
+public class McChannel extends Channel{
 
-    private static boolean putchunkWhileWaiting = false;
-    ArrayList<Message> storedReplies;
-
+	private static boolean putchunkWhileWaiting = false;
+	ArrayList<Message> storedReplies;
+	
     public McChannel(InetAddress addr, int port) throws IOException {
         super(addr, port);
         this.storedReplies = new ArrayList<>();
@@ -75,17 +75,17 @@ public class McChannel extends Channel {
 		}
 	}
 
-    public ArrayList<Message> getStoredReplies() {
-        return storedReplies;
-    }
+	public ArrayList<Message> getStoredReplies() {
+		return storedReplies;
+	}
 
-    public void setStoredReplies(ArrayList<Message> storedReplies) {
-        this.storedReplies = storedReplies;
-    }
+	public void setStoredReplies(ArrayList<Message> storedReplies) {
+		this.storedReplies = storedReplies;
+	}
 
-    public static void setReceivedPutchunk(boolean putchunkWhileWaiting) {
-        McChannel.putchunkWhileWaiting = putchunkWhileWaiting;
-    }
-
+	public static void setReceivedPutchunk(boolean putchunkWhileWaiting) {
+		McChannel.putchunkWhileWaiting = putchunkWhileWaiting;
+	}
+    
 
 }

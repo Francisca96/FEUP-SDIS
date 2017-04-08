@@ -46,12 +46,11 @@ public class Peer {
         mdbChannel = new MdbChannel(mcAddr, mcPort);
         mdrChannel = new MdrChannel(mcAddr, mcPort);
 
-        //Channel Listening
-        //mcChannel.thread.start();
-        mdbChannel.thread.start();
-        //mdrChannel.thread.start();
 
-        System.out.println("\noi");
+        //Channel Listening
+        mcChannel.thread.start();
+        mdbChannel.thread.start();
+        mdrChannel.thread.start();
 
         loadData();
         protocoles();

@@ -1,5 +1,3 @@
-import subprotocols.Backup;
-
 import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -43,8 +41,6 @@ public class InitiatorPeer implements Services {
 
     @Override
     public String backup(String file_name, int replication_deg) throws RemoteException {
-        Backup backup = new Backup(file_name, replication_deg);
-        backup.run();
         return null;
     }
 
