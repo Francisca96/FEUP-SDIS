@@ -5,6 +5,8 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
+import subprotocols.*;
+
 public class InitiatorPeer implements Services {
     private static String remote_obj_name;
 
@@ -41,6 +43,8 @@ public class InitiatorPeer implements Services {
 
     @Override
     public String backup(String file_name, int replication_deg) throws RemoteException {
+        Backup backup = new Backup(file_name, replication_deg);
+        backup.run();
         return null;
     }
 
