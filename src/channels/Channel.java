@@ -20,4 +20,37 @@ public class Channel{
         //The initiator-peer collects the confirmation messages during a time interval of 1 second.
         this.socket.setTimeToLive(1);
     }
+
+	public Thread getThread() {
+		return thread;
+	}
+
+	public void setThread(Thread thread) {
+		this.thread = thread;
+	}
+
+	public MulticastSocket getSocket() {
+		return socket;
+	}
+
+	public void setSocket(MulticastSocket socket) {
+		this.socket = socket;
+	}
+
+	public InetAddress getAddr() {
+		return addr;
+	}
+
+	public void setAddr(InetAddress addr) {
+		this.addr = addr;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+    
 }

@@ -5,8 +5,13 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.util.Arrays;
+import java.util.concurrent.ThreadLocalRandom;
 
-import messages.Header;
+import peers.DataBase;
+import peers.FileInfo;
+import peers.Peer;
+import utilities.Header;
+import utilities.Message;
 
 public class MdbChannel extends Channel{
 
@@ -35,23 +40,51 @@ public class MdbChannel extends Channel{
                     int offsetOfBody = dataArray[0].length() + 4;
                     byte[] bodyByteArray = getArrayFromOffset(packet.getData(), offsetOfBody, packet.getLength());
 
-                    //Analisar a data e ver se ja tem guardada versao senao guardar e mandar pelo Mc que recebeu
-
-
+                    if(Peer.getPeerId() != header.getSenderId()) {
+						switch (header.getMessageType()) {
+						case "PUTCHUNK":
+							System.out.println("Received PUTCHUNK");
+							if (DataBase.repDegAchieved(header) && header.getVersion().equals("1.2")) {
+								System.out.println("ReplicationDeg was already achieved! Ignoring chunk");
+								break;
+							}
+							McChannel.setReceivedPutchunk(true);
+							handlePutChunk(header, bodyByteArray);
+							break;
+						}
+					}
                     socket.leaveGroup(addr);
                 }
-                /*
-                 *
-                 * tratar exceçoes no handlle
-                 *
-                 */
-
                 catch (IOException  | InterruptedException e) {
                     e.printStackTrace();
                 }
             }
 
         }
+
+		private void handlePutChunk(Header header, byte[] bodyByteArray) throws InterruptedException {
+			Peer.getData();
+			// file was backed up by this peer
+			for (FileInfo fileInfo : Peer.getData().getBackedUpFiles().values()) 
+			    if (fileInfo.getFileId().equals(header.getFileId()))
+			    	return;
+			//save chunk
+			try {
+				Peer.getData().saveChunk(header, bodyByteArray);
+			} catch (IOException e) {
+				System.out.println("Could not save the chunk " + header.getChunkNo() + "from file " + header.getFileId());
+				return;
+			}
+			//reply
+			Header replyHeader = new Header("STORED", header.getVersion(),
+					Peer.getPeerId(), header.getFileId(), header.getChunkNo(), 0);
+			Message reply = new Message(Peer.getMcChannel().getSocket(), Peer.getMcChannel().getAddr(), replyHeader, null);
+			int timeout = ThreadLocalRandom.current().nextInt(0, 400);
+			Thread.sleep(timeout);
+			new Thread(reply).start();
+			System.out.println("Replying...");
+			
+		}
     }
 
 

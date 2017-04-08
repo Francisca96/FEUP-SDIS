@@ -1,4 +1,4 @@
-package messages;
+package utilities;
 
 /**
  * Created by Francisca on 28/03/17.

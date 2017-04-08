@@ -1,12 +1,20 @@
+package peers;
 import channels.*;
 import subprotocols.Backup;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+
+import javax.xml.crypto.Data;
 
 /**
  * Created by Francisca on 27/03/17.
@@ -26,6 +34,8 @@ public class Peer {
     private static McChannel mcChannel;
     private static MdbChannel mdbChannel;
     private static MdrChannel mdrChannel;
+    
+    private static DataBase data;
 
     private static void main(String[] args) throws IOException {
         if(!checkArguments(args)){
@@ -42,11 +52,57 @@ public class Peer {
         mdbChannel.thread.start();
         mdrChannel.thread.start();
 
+        loadData();
         protocoles();
 
     }
 
-    private static void protocoles() throws IOException {
+	public static void saveData() {
+		try {
+			FileOutputStream fileOut =
+					new FileOutputStream("../data_" + Peer.getPeerId()+ "/data.ser");
+			ObjectOutputStream output = new ObjectOutputStream(fileOut);
+			output.writeObject(data);
+			output.close();
+			fileOut.close();
+		}  
+		catch(IOException ex){
+			ex.printStackTrace();
+		}
+	}
+
+	public static void loadData() {
+		try
+		{
+			File dataBase = new File("../data_" + Peer.getPeerId()+ "/data.ser");
+			if (!dataBase.exists()) {
+				System.out.println("Creating new file.");
+				File dir = new File("../data_" + Peer.getPeerId());
+				dir.mkdirs();
+				dataBase.createNewFile();
+				data =  new DataBase();
+				saveData();
+				return;
+			}
+			FileInputStream fileIn = new FileInputStream("../data_" + Peer.getPeerId()+ "/data.ser");
+			ObjectInputStream input = new ObjectInputStream(fileIn);
+
+			data = (DataBase)input.readObject();
+			input.close();
+			fileIn.close();
+			return;
+		}
+		catch(ClassNotFoundException ex){
+			System.out.println("Cannot perform input. Class not found.");
+		}
+		catch(IOException ex){
+			System.out.println("Could not load data, maybe the file does not exist.");
+		}
+		data = null;
+	}
+	
+
+	private static void protocoles() throws IOException {
         DatagramSocket socket = new DatagramSocket(peerId);
         String protocole ="";
         while(true){
@@ -142,4 +198,39 @@ public class Peer {
     public static void setMdrAddr(InetAddress mdrAddr) {
         Peer.mdrAddr = mdrAddr;
     }
+
+	public static McChannel getMcChannel() {
+		return mcChannel;
+	}
+
+	public static void setMcChannel(McChannel mcChannel) {
+		Peer.mcChannel = mcChannel;
+	}
+
+	public static MdbChannel getMdbChannel() {
+		return mdbChannel;
+	}
+
+	public static void setMdbChannel(MdbChannel mdbChannel) {
+		Peer.mdbChannel = mdbChannel;
+	}
+
+	public static MdrChannel getMdrChannel() {
+		return mdrChannel;
+	}
+
+	public static void setMdrChannel(MdrChannel mdrChannel) {
+		Peer.mdrChannel = mdrChannel;
+	}
+
+	public static DataBase getData() {
+		return data;
+	}
+
+	public static void setData(DataBase storage) {
+		Peer.data = storage;
+	}
+	
+	
+    
 }
