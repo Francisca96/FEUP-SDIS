@@ -39,25 +39,29 @@ public class Peer {
     private static MdrChannel mdrChannel;
 
     private static DataBase data;
+    private static DatagramSocket socket;
 
     public static void main(String[] args) throws IOException {
-        /* Needed for Mac OS X */
+    	/* Needed for Mac OS X */
         System.setProperty("java.net.preferIPv4Stack", "true");
-
-        if (!checkArguments(args)) {
+    	
+    	if (!checkArguments(args)) {
             return;
         }
 
         mcChannel = new McChannel(mcAddr, mcPort);
         mdbChannel = new MdbChannel(mcAddr, mcPort);
         mdrChannel = new MdrChannel(mcAddr, mcPort);
+        socket = new DatagramSocket(peerId);
 
+        loadData();
+        
         //Channel Listening
         //mcChannel.thread.start();
         mdbChannel.thread.start();
         //mdrChannel.thread.start();
 
-        loadData();
+        
         protocoles();
 
     }
@@ -104,7 +108,6 @@ public class Peer {
 
 
     private static void protocoles() throws IOException {
-        DatagramSocket socket = new DatagramSocket(peerId);
         String protocole = "";
         while (true) {
             byte[] buf = new byte[256];
