@@ -25,6 +25,7 @@ public class Peer {
 
     //Server Id
     private static String peer_id;
+    private static int serviceAccessPoint;
     //Ports
     private static int mcPort;
     private static int mdbPort;
@@ -56,7 +57,7 @@ public class Peer {
         mdbChannel = new MdbChannel(mcAddr, mcPort);
         mdrChannel = new MdrChannel(mcAddr, mcPort);
         socket = new DatagramSocket();
-        init_peer = new InitiatorPeer(peer_id);
+        init_peer = new InitiatorPeer(peer_id, serviceAccessPoint);
 
         loadData();
         
@@ -135,20 +136,21 @@ public class Peer {
     }
 
     private static boolean checkArguments(String[] args) throws UnknownHostException {
-        if (args.length != 4) {
-            System.out.println("Invalid number of arguments! Usage: <peerId> <mcAddr>:<mcPort> <mdbAddr>:<mdbPort> <mdrAddr>:<mdrPort>");
+        if (args.length != 5) {
+            System.out.println("Invalid number of arguments! Usage: <peerId> <serviceAccessPoint> <mcAddr>:<mcPort> <mdbAddr>:<mdbPort> <mdrAddr>:<mdrPort>");
             return false;
         }
 
         setPeer_id(args[0]);
+        serviceAccessPoint = Integer.parseInt(args[1]);
 
-        setMcAddr(InetAddress.getByName(args[1].split(":")[0]));
-        setMdbAddr(InetAddress.getByName(args[2].split(":")[0]));
-        setMdrAddr(InetAddress.getByName(args[3].split(":")[0]));
+        setMcAddr(InetAddress.getByName(args[2].split(":")[0]));
+        setMdbAddr(InetAddress.getByName(args[3].split(":")[0]));
+        setMdrAddr(InetAddress.getByName(args[4].split(":")[0]));
 
-        setMcPort(Integer.parseInt(args[1].split(":")[1]));
         setMcPort(Integer.parseInt(args[2].split(":")[1]));
         setMcPort(Integer.parseInt(args[3].split(":")[1]));
+        setMcPort(Integer.parseInt(args[4].split(":")[1]));
 
         return true;
     }

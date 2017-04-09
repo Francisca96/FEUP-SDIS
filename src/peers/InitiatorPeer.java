@@ -10,9 +10,11 @@ import subprotocols.*;
 
 public class InitiatorPeer implements Services {
     private static String remote_obj_name;
+    private static int serviceAccessPoint;
 
-    public InitiatorPeer(String remote_obj_name){
+    public InitiatorPeer(String remote_obj_name, int serviceAccessPoint) {
         InitiatorPeer.remote_obj_name = remote_obj_name;
+        InitiatorPeer.serviceAccessPoint = serviceAccessPoint;
     }
 
     public static void main(String args[]) throws UnknownHostException, RemoteException {
@@ -21,14 +23,14 @@ public class InitiatorPeer implements Services {
         }
 
         try {
-            InitiatorPeer init_peer = new InitiatorPeer(remote_obj_name);
+            InitiatorPeer init_peer = new InitiatorPeer(remote_obj_name, serviceAccessPoint);
 
-            Services service = (Services) UnicastRemoteObject.exportObject(init_peer, 1099);
-            //LocateRegistry.createRegistry(1099);
-            Registry registry = LocateRegistry.getRegistry();
+            Services service = (Services) UnicastRemoteObject.exportObject(init_peer, serviceAccessPoint);
+            LocateRegistry.createRegistry(serviceAccessPoint);
+            Registry registry = LocateRegistry.getRegistry(serviceAccessPoint);
             registry.rebind(remote_obj_name, service);
 
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.exit(-1);
         }
