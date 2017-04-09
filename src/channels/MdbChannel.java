@@ -49,7 +49,7 @@ public class MdbChannel extends Channel{
 
     public class MdbThread extends Thread {
         public void run() {
-            System.out.println("MdbChannel listening...");
+            System.out.println("Listening the MDB channel...");
             while(true){
                 try{
                     socket.joinGroup(addr);

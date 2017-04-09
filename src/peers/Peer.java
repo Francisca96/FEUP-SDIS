@@ -52,15 +52,14 @@ public class Peer {
         mcChannel = new McChannel(mcAddr, mcPort);
         mdbChannel = new MdbChannel(mcAddr, mcPort);
         mdrChannel = new MdrChannel(mcAddr, mcPort);
-        socket = new DatagramSocket(peerId);
+        socket = new DatagramSocket();
 
         loadData();
         
         //Channel Listening
-        //mcChannel.thread.start();
+        mcChannel.thread.start();
         mdbChannel.thread.start();
-        //mdrChannel.thread.start();
-
+        mdrChannel.thread.start();
         
         protocoles();
 

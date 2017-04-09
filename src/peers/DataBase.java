@@ -3,6 +3,7 @@ package peers;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,7 +13,7 @@ import java.util.HashMap;
 import utilities.Chunk;
 import utilities.Header;
 
-public class DataBase {
+public class DataBase implements Serializable {
 	HashMap<Chunk, ArrayList<Header>> receivedStoreMessages;
 
 	HashMap<String, ChunksList> chunksBackedUp; //FileId as key, Array of ChuksList as value
