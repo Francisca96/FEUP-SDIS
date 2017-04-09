@@ -7,6 +7,8 @@ import java.net.MulticastSocket;
 import java.util.Arrays;
 
 import channels.MdbChannel.MdbThread;
+import peers.Peer;
+import subprotocols.Restore;
 import utilities.Header;
 
 public class MdrChannel extends Channel{
@@ -38,13 +40,38 @@ public class MdrChannel extends Channel{
                     int offsetOfBody = dataArray[0].length() + 4;
                     byte[] bodyByteArray = getArrayFromOffset(packet.getData(), offsetOfBody, packet.getLength());
                     
+                    //Use data
+					if(!Peer.getPeer_id().equals(header.getSenderId())) {
+						switch (header.getMessageType()) {
+						case "CHUNK":
+							if (chunks_waiting) {
+								int chunkNum = header.getChunkNo();
+								handleChunk(chunkNum, bodyByteArray);
+							}
+							break;
+						}
+					}
+                    
 					socket.leaveGroup(addr);
 				} catch (IOException e) {
                     e.printStackTrace();
                 }
 			}
 		}
+    }
+    
+    
+	private void handleChunk(int chunkNum, byte[] bodyByteArray) throws IOException {
+		int size = 64*1000;
+		if (bodyByteArray == null || (bodyByteArray.length <= size && chunkNum == Restore.getNumOfChunks())) {
+			Peer.getData().saveRestoredChunk(Restore.getFile_name(), bodyByteArray);
+		}
+		else{
+			System.out.println("Chunk Num = " + chunkNum + " vs Stored chunk Num = " + Restore.getNumOfChunks());
+			System.out.println("The received chunk has" + bodyByteArray.length + " bytes.");
+		}
 	}
+	
 
 	public void setWaitingChunks(boolean chunks_waiting) {
 		this.chunks_waiting = chunks_waiting;

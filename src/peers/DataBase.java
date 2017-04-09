@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import subprotocols.Restore;
 import utilities.Chunk;
 import utilities.Header;
 
@@ -152,6 +153,25 @@ public class DataBase implements Serializable {
 	public void clearStoredChunks(Header header) {
 		if (chunksSaved.get(header.getFileId()) != null) {
 			chunksSaved.remove(header.getFileId());
+		}
+		
+	}
+
+	public void saveRestoredChunk(String file_name, byte[] bodyByteArray) throws IOException {
+		FileInfo fileInfo = backedUpFiles.get(file_name);
+		Restore.getNew_output().write(bodyByteArray);
+		int size = 64*1000;
+		if (bodyByteArray.length < size) {
+			Peer.getMdrChannel().setWaitingChunks(false);
+			Restore.getNew_output().close();
+			System.out.println("File was restored!");
+			if (Restore.getNumOfChunks() != fileInfo.getNumberOfChunks()){
+					System.out.println("The number of received chunks doesn't match the number of chunks in this file");
+				}
+			Restore.loadDefaults();
+		} else {
+			Restore.incNumOfChunks();
+			Restore.sendChunk();
 		}
 		
 	}

@@ -15,7 +15,7 @@ public class Restore extends Thread{
 	private static byte[] file;
 	private static Header header;
 	private static int numOfChunks = 0;
-	private Message message;
+	private static Message message;
 
 	public Restore(String file_name){
 		this.file_name = file_name;
@@ -41,12 +41,44 @@ public class Restore extends Thread{
 		header = new Header("GETCHUNK", "1.0", Peer.getPeer_id(), fileInfo.getFileId(), 0, 0);
 		
 		Peer.getMdrChannel().setWaitingChunks(true);
+		sendChunk();
 		
-		header.setChunkNo(numOfChunks);
-		this.message = new Message(Peer.getMcChannel().getSocket(), Peer.getMcChannel().getAddr(), header, null);
-		new Thread(this.message).start();
 		
 	}
+
+	public static String getFile_name() {
+		return file_name;
+	}
+
+	public static void setFile_name(String file_name) {
+		Restore.file_name = file_name;
+	}
+
+	public static int getNumOfChunks(){ 
+		return numOfChunks;
+	}
+	
+	public static void loadDefaults() {
+		file = new byte[0];
+		numOfChunks = 0;
+	}
+
+	public static FileOutputStream getNew_output() {
+		return new_output;
+	}
+
+	public static void incNumOfChunks() {
+		numOfChunks++;
+	}
+
+	public static void sendChunk() {
+		header.setChunkNo(numOfChunks);
+		message = new Message(Peer.getMcChannel().getSocket(), Peer.getMcChannel().getAddr(), header, null);
+		new Thread(message).start();
+		
+	}
+	
+	
 
 
 }
