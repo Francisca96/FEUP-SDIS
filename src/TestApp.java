@@ -8,8 +8,8 @@ import java.rmi.registry.LocateRegistry;
  * Created by Francisca on 29/03/17.
  */
 public class TestApp {
-    private static String peer_ap;
     private static String remote_obj_name;
+    private static String operation;
     private static String file_name;
     private static int replication_deg;
 
@@ -23,7 +23,7 @@ public class TestApp {
 
         try {
             service = (Services) registry.lookup(remote_obj_name);
-            switch(remote_obj_name) {
+            switch(operation) {
                 case "BACKUP":
                     service.backup(file_name, replication_deg);
                     break;
@@ -50,14 +50,14 @@ public class TestApp {
 
     private static boolean checkArguments(String[] args) throws UnknownHostException {
         if(args.length < 2 || args.length > 4){
-            System.out.println("Invalid number of arguments! Usage: java TestApp <peer_ap> <sub_protocol> <opnd_1> <opnd_2>");
+            System.out.println("Invalid number of arguments! Usage: java TestApp <peer_ap> <operation> <opnd_1> <opnd_2>");
             return false;
         }
 
-        setPeer_ap(args[0]);
-        setRemote_obj_name(args[1]);
+        setRemote_obj_name(args[0]);
+        setOperation(args[1]);
 
-        switch(remote_obj_name) {
+        switch(operation) {
             case "BACKUP":
                 file_name = args[2];
                 replication_deg = Integer.parseInt(args[3]);
@@ -81,14 +81,6 @@ public class TestApp {
         return true;
     }
 
-    //GETTERS AND SETTERS
-    public static String getPeer_ap() {
-        return peer_ap;
-    }
-
-    public static void setPeer_ap(String peer_ap) {
-        TestApp.peer_ap = peer_ap;
-    }
 
     public static String getRemote_obj_name() {
         return remote_obj_name;
@@ -96,5 +88,29 @@ public class TestApp {
 
     public static void setRemote_obj_name(String remote_obj_name) {
         TestApp.remote_obj_name = remote_obj_name;
+    }
+
+    public static String getOperation() {
+        return operation;
+    }
+
+    public static void setOperation(String operation) {
+        TestApp.operation = operation;
+    }
+
+    public static String getFile_name() {
+        return file_name;
+    }
+
+    public static void setFile_name(String file_name) {
+        TestApp.file_name = file_name;
+    }
+
+    public static int getReplication_deg() {
+        return replication_deg;
+    }
+
+    public static void setReplication_deg(int replication_deg) {
+        TestApp.replication_deg = replication_deg;
     }
 }
