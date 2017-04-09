@@ -19,6 +19,33 @@ public class MdbChannel extends Channel{
         super(addr, port);
         this.thread = new MdbThread();
     }
+    
+    
+    private void handlePutChunk(Header header, byte[] bodyByteArray) throws InterruptedException {
+		Peer.getData();
+		// file was backed up by this peer
+		for (FileInfo fileInfo : Peer.getData().getBackedUpFiles().values()) 
+		    if (fileInfo.getFileId().equals(header.getFileId()))
+		    	return;
+		//save chunk
+		try {
+			Peer.getData().saveChunk(header, bodyByteArray);
+		} catch (IOException e) {
+			System.out.println("Could not save the chunk " + header.getChunkNo() + "from file " + header.getFileId());
+			return;
+		}
+		//reply
+		Header replyHeader = new Header("STORED", header.getVersion(),
+				Peer.getPeerId(), header.getFileId(), header.getChunkNo(), 0);
+		Message reply = new Message(Peer.getMcChannel().getSocket(), Peer.getMcChannel().getAddr(), replyHeader, null);
+		int timeout = ThreadLocalRandom.current().nextInt(0, 400);
+		Thread.sleep(timeout);
+		new Thread(reply).start();
+		System.out.println("Replying...");
+		
+	}
+
+    
 
     public class MdbThread extends Thread {
         public void run() {
@@ -61,33 +88,6 @@ public class MdbChannel extends Channel{
             }
 
         }
-
-		private void handlePutChunk(Header header, byte[] bodyByteArray) throws InterruptedException {
-			Peer.getData();
-			// file was backed up by this peer
-			for (FileInfo fileInfo : Peer.getData().getBackedUpFiles().values()) 
-			    if (fileInfo.getFileId().equals(header.getFileId()))
-			    	return;
-			//save chunk
-			try {
-				Peer.getData().saveChunk(header, bodyByteArray);
-			} catch (IOException e) {
-				System.out.println("Could not save the chunk " + header.getChunkNo() + "from file " + header.getFileId());
-				return;
-			}
-			//reply
-			Header replyHeader = new Header("STORED", header.getVersion(),
-					Peer.getPeerId(), header.getFileId(), header.getChunkNo(), 0);
-			Message reply = new Message(Peer.getMcChannel().getSocket(), Peer.getMcChannel().getAddr(), replyHeader, null);
-			int timeout = ThreadLocalRandom.current().nextInt(0, 400);
-			Thread.sleep(timeout);
-			new Thread(reply).start();
-			System.out.println("Replying...");
-			
-		}
     }
-
-
-
-
 }
+
