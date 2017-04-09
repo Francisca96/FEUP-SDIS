@@ -10,7 +10,9 @@ import channels.MdbChannel.MdbThread;
 import utilities.Header;
 
 public class MdrChannel extends Channel{
-
+	
+	private boolean chunks_waiting = false;
+	
     public MdrChannel(InetAddress addr, int port) throws IOException {
         super(addr, port);
         this.thread = new MdrThread();
@@ -42,6 +44,11 @@ public class MdrChannel extends Channel{
                 }
 			}
 		}
+	}
+
+	public void setWaitingChunks(boolean chunks_waiting) {
+		this.chunks_waiting = chunks_waiting;
+		
 	}
 
 }
