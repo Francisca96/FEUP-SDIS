@@ -5,11 +5,15 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 import peers.Peer;
+import subprotocols.Backup;
+import utilities.Chunk;
 import utilities.Header;
 import utilities.Message;
 
@@ -68,6 +72,7 @@ public class McChannel extends Channel{
 					if(Peer.getPeer_id() != (header.getSenderId())) {
 						switch (header.getMessageType()) {
 						case "GETCHUNK":
+							System.out.println("GETCHUNK");
 							if (!Peer.getData().chunkIsStored(header.getFileId(), header.getChunkNo())) {
 								System.out.println("Chunk is not stored");
 								break;
@@ -75,20 +80,60 @@ public class McChannel extends Channel{
 							getChunk(header);
 							break;
 						case "STORED":
+							System.out.println("STORED");
 							storedReplies.add(message);
 							Peer.getData().addToReceivedStoreMessages(header);
 							break;
 						case "DELETE":
+							System.out.println("DELETE");
 							delete(message);
 							break;
-							
 						}
 					} 
+					switch (header.getMessageType()) {
+					case "REMOVED":
+						System.out.println("REMOVED");
+						handleRemoved(header);
+						break;
+				}
 					socket.leaveGroup(addr);
 				} catch (IOException | InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
+		}
+
+		private void handleRemoved(Header header) throws InterruptedException {
+			Chunk chunkInfo = Peer.getData().removeFromReceivedStoreMessages(header);
+			if (chunkInfo != null) {
+				putchunkWhileWaiting = false;
+				int timeout = ThreadLocalRandom.current().nextInt(0, 400);
+				Thread.sleep(timeout);
+				if (putchunkWhileWaiting) {
+					handleRemoved(header);
+					return;
+				}
+				prepareChunk(chunkInfo);
+			} else {
+				System.out.println("Chunk info is null.");
+			}
+			
+		}
+
+		private void prepareChunk(Chunk chunkInfo) {
+			String fileName = "chunks_" + Peer.getPeer_id() + "/" + chunkInfo.getFileId() + "/" + chunkInfo.getChunkNo() + ".data";
+			String chunkPath = "../res/" + fileName;
+			
+			byte[] chunk = new byte[0];
+			try {
+				chunk = Files.readAllBytes(Paths.get(chunkPath));
+			} catch (IOException e) {
+				System.out.println("Could not read bytes from " + chunkPath);
+			}
+			String version = "1.0";
+			Header header = new Header("PUTCHUNK", version, Peer.getPeer_id(), chunkInfo.getFileId(), chunkInfo.getChunkNo(), chunkInfo.getReplicationDeg());
+			Backup.sendChunk(header, chunk);
+			
 		}
     }
 
@@ -103,6 +148,14 @@ public class McChannel extends Channel{
 
 	public static void setReceivedPutchunk(boolean putchunkWhileWaiting) {
 		McChannel.putchunkWhileWaiting = putchunkWhileWaiting;
+	}
+
+	public static void sendRemoved(Chunk chunk) {
+		Header header = new Header("REMOVED", "1.0",
+				Peer.getPeer_id(), chunk.getFileId(), chunk.getChunkNo(), 0);
+		Message message = new Message(Peer.getMcChannel().getSocket(), Peer.getMcChannel().getAddr(), header, null);
+		new Thread(message).start();
+		
 	}
     
 

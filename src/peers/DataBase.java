@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import channels.McChannel;
 import subprotocols.Restore;
 import utilities.Chunk;
 import utilities.Header;
@@ -174,6 +175,51 @@ public class DataBase implements Serializable {
 			Restore.sendChunk();
 		}
 		
+	}
+
+	public int deleteChunk(Chunk chunk) {
+		File file = new File(chunks.getPath() + "/" + chunk.getFileId() + "/" + chunk.getChunkNo() + ".data");
+		int size = (int) file.length();
+		if(!file.delete()){
+			System.out.println("Could not delete chunk.");
+			return 0;
+		}
+		deleteFromChunksSaved(chunk);
+		McChannel.sendRemoved(chunk);
+		usedSpace -= size;
+		return size;
+		
+	}
+
+	private void deleteFromChunksSaved(Chunk chunk) {
+		ChunksList chunks = chunksSaved.get(chunk.getFileId());
+		chunks.remove(chunk);
+	}
+
+	public Chunk removeFromReceivedStoreMessages(Header header) {
+		header.setMessageType("STORED");
+		Chunk chunkInfo = new Chunk(header);
+		ArrayList<Header> headers = receivedStoreMessages.get(chunkInfo) != null ? receivedStoreMessages.get(chunkInfo) : new ArrayList<Header>();
+		if(headers.contains(header)) {
+			headers.remove(header);
+		} 
+		boolean iHaveIt = chunksSaved.get(header.getFileId()) != null  && chunksSaved.get(header.getFileId()).contains(chunkInfo) ? true : false;
+		if (!iHaveIt) {
+			System.out.println("I dont have this chunk");
+			return null;
+		}
+		int replication = headers.size() + 1;
+		int replicationDeg = -1;
+		for (Chunk info : chunksSaved.get(header.getFileId())) {
+			if (info.equals(chunkInfo)) {
+				replicationDeg = info.getReplicationDeg();
+				if (replication < replicationDeg)
+					return info;
+				else
+					break;
+			}
+		}
+		return null;
 	}
 	
 	
