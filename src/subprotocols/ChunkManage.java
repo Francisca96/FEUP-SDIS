@@ -69,7 +69,7 @@ public class ChunkManage {
 	private boolean validReply(Header replyHeader) {
 		if (!replyHeader.getMessageType().equals("STORED"))
 			return false;
-		if (replyHeader.getSenderId() == Peer.getPeerId())
+		if (replyHeader.getSenderId() == Peer.getPeer_id())
 			return false;
 		if (!replyHeader.getFileId().equals(message.getHeader().getFileId()))
 			return false;

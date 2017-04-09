@@ -27,12 +27,12 @@ public class McChannel extends Channel{
 	private void delete(Message message) {
 		Header header = message.getHeader();
 		Peer.getData().clearStoredChunks(header);
-		File file =  new File("../res/" + "chunks_" + Peer.getPeerId() + "/" + header.getFileId() + "/");
+		File file =  new File("../res/" + "chunks_" + Peer.getPeer_id() + "/" + header.getFileId() + "/");
 	}
 
 	private void getChunk(Header header) throws InterruptedException, IOException {
 		byte[] body = Peer.getData().getChunkBody(header.getFileId(), header.getChunkNo());		
-		Header replyHeader = new Header("CHUNK", "1.0", Peer.getPeerId(), header.getFileId(), header.getChunkNo(), 0);
+		Header replyHeader = new Header("CHUNK", "1.0", Peer.getPeer_id(), header.getFileId(), header.getChunkNo(), 0);
 		Message reply = new Message(Peer.getMdrChannel().getSocket(), Peer.getMdrChannel().getAddr(), replyHeader, body);
 		int timeout = ThreadLocalRandom.current().nextInt(0, 400);
 		Thread.sleep(timeout);
@@ -65,7 +65,7 @@ public class McChannel extends Channel{
 					
 					System.out.println("Received " + header.getMessageType());
 					
-					if(Peer.getPeerId() != (header.getSenderId())) {
+					if(Peer.getPeer_id() != (header.getSenderId())) {
 						switch (header.getMessageType()) {
 						case "GETCHUNK":
 							if (!Peer.getData().chunkIsStored(header.getFileId(), header.getChunkNo())) {

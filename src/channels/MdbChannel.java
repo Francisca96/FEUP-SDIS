@@ -36,7 +36,7 @@ public class MdbChannel extends Channel{
 		}
 		//reply
 		Header replyHeader = new Header("STORED", header.getVersion(),
-				Peer.getPeerId(), header.getFileId(), header.getChunkNo(), 0);
+				Peer.getPeer_id(), header.getFileId(), header.getChunkNo(), 0);
 		Message reply = new Message(Peer.getMcChannel().getSocket(), Peer.getMcChannel().getAddr(), replyHeader, null);
 		int timeout = ThreadLocalRandom.current().nextInt(0, 400);
 		Thread.sleep(timeout);
@@ -67,7 +67,7 @@ public class MdbChannel extends Channel{
                     int offsetOfBody = dataArray[0].length() + 4;
                     byte[] bodyByteArray = getArrayFromOffset(packet.getData(), offsetOfBody, packet.getLength());
 
-                    if(Peer.getPeerId() != header.getSenderId()) {
+                    if(Peer.getPeer_id() != header.getSenderId()) {
 						switch (header.getMessageType()) {
 						case "PUTCHUNK":
 							System.out.println("Received PUTCHUNK");

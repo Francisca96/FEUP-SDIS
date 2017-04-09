@@ -1,5 +1,6 @@
+package peers;
+
 import java.net.UnknownHostException;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -10,16 +11,20 @@ import subprotocols.*;
 public class InitiatorPeer implements Services {
     private static String remote_obj_name;
 
+    public InitiatorPeer(String remote_obj_name){
+        InitiatorPeer.remote_obj_name = remote_obj_name;
+    }
+
     public static void main(String args[]) throws UnknownHostException, RemoteException {
         if (!checkArguments(args)) {
             return;
         }
 
         try {
-            InitiatorPeer init_peer = new InitiatorPeer();
+            InitiatorPeer init_peer = new InitiatorPeer(remote_obj_name);
 
             Services service = (Services) UnicastRemoteObject.exportObject(init_peer, 1099);
-            LocateRegistry.createRegistry(1099);
+            //LocateRegistry.createRegistry(1099);
             Registry registry = LocateRegistry.getRegistry();
             registry.rebind(remote_obj_name, service);
 

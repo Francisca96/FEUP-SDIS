@@ -44,7 +44,7 @@ public class Backup extends Thread {
     	String fileId = getFileId(file);
     	
     	String version = "1.0";
-		Header header = new Header("PUTCHUNK", version, Peer.getPeerId(), fileId, 0, replicationDeg);
+		Header header = new Header("PUTCHUNK", version, Peer.getPeer_id(), fileId, 0, replicationDeg);
 		
 		int bytesRead = 0;
 		int numberOfChunks = 0;
@@ -108,7 +108,7 @@ public class Backup extends Thread {
 	
 	//Get File Id
 	public static String getFileId(File file) {
-		return sha256(file.getName() + file.lastModified() + Peer.getPeerId());
+		return sha256(file.getName() + file.lastModified() + Peer.getPeer_id());
 	}
 	
 	

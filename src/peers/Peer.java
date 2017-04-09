@@ -24,7 +24,7 @@ import javax.xml.crypto.Data;
 public class Peer {
 
     //Server Id
-    private static int peerId;
+    private static String peer_id;
     //Ports
     private static int mcPort;
     private static int mdbPort;
@@ -41,6 +41,9 @@ public class Peer {
     private static DataBase data;
     private static DatagramSocket socket;
 
+    private static InitiatorPeer init_peer;
+
+
     public static void main(String[] args) throws IOException {
     	/* Needed for Mac OS X */
         System.setProperty("java.net.preferIPv4Stack", "true");
@@ -53,6 +56,7 @@ public class Peer {
         mdbChannel = new MdbChannel(mcAddr, mcPort);
         mdrChannel = new MdrChannel(mcAddr, mcPort);
         socket = new DatagramSocket();
+        init_peer = new InitiatorPeer(peer_id);
 
         loadData();
         
@@ -68,7 +72,7 @@ public class Peer {
     public static void saveData() {
         try {
             FileOutputStream fileOut =
-                    new FileOutputStream("../data_" + Peer.getPeerId() + "/data.ser");
+                    new FileOutputStream("../data_" + Peer.getPeer_id() + "/data.ser");
             ObjectOutputStream output = new ObjectOutputStream(fileOut);
             output.writeObject(data);
             output.close();
@@ -80,17 +84,17 @@ public class Peer {
 
     public static void loadData() {
         try {
-            File dataBase = new File("../data_" + Peer.getPeerId() + "/data.ser");
+            File dataBase = new File("../data_" + Peer.getPeer_id() + "/data.ser");
             if (!dataBase.exists()) {
                 System.out.println("Creating new file.");
-                File dir = new File("../data_" + Peer.getPeerId());
+                File dir = new File("../data_" + Peer.getPeer_id());
                 dir.mkdirs();
                 dataBase.createNewFile();
                 data = new DataBase();
                 saveData();
                 return;
             }
-            FileInputStream fileIn = new FileInputStream("../data_" + Peer.getPeerId() + "/data.ser");
+            FileInputStream fileIn = new FileInputStream("../data_" + Peer.getPeer_id() + "/data.ser");
             ObjectInputStream input = new ObjectInputStream(fileIn);
 
             data = (DataBase) input.readObject();
@@ -136,7 +140,7 @@ public class Peer {
             return false;
         }
 
-        setPeerId(Integer.parseInt(args[0]));
+        setPeer_id(args[0]);
 
         setMcAddr(InetAddress.getByName(args[1].split(":")[0]));
         setMdbAddr(InetAddress.getByName(args[2].split(":")[0]));
@@ -149,13 +153,13 @@ public class Peer {
         return true;
     }
 
-    //GETTERS AND SETTERS
-    public static int getPeerId() {
-        return peerId;
+
+    public static String getPeer_id() {
+        return peer_id;
     }
 
-    public static void setPeerId(int peerId) {
-        Peer.peerId = peerId;
+    public static void setPeer_id(String peer_id) {
+        Peer.peer_id = peer_id;
     }
 
     public static int getMcPort() {
@@ -234,9 +238,15 @@ public class Peer {
         return data;
     }
 
-    public static void setData(DataBase storage) {
-        Peer.data = storage;
+    public static void setData(DataBase data) {
+        Peer.data = data;
     }
 
+    public static DatagramSocket getSocket() {
+        return socket;
+    }
 
+    public static void setSocket(DatagramSocket socket) {
+        Peer.socket = socket;
+    }
 }

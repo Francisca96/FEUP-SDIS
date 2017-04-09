@@ -73,7 +73,7 @@ public class Channel{
         String[] headerTokens = headerMsg.split("\\s+");
         String messageType = headerTokens[0];
         String version = headerTokens[1];
-        int senderId = Integer.parseInt(headerTokens[2]);
+        String senderId = headerTokens[2];
         String fileId = headerTokens[3];
         int ChunkNo = Integer.parseInt(headerTokens[4]);
         int replicationDeg;
@@ -82,7 +82,7 @@ public class Channel{
         else
             replicationDeg = Integer.parseInt("");
 
-        return new Header(messageType,version,senderId,fileId,ChunkNo,replicationDeg);
+        return new Header(messageType, version, senderId, fileId, ChunkNo, replicationDeg);
     }
     
 }

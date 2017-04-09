@@ -19,7 +19,7 @@ public class Delete extends Thread{
 		File file = new File("../res/" + file_name);
 		String fileId = getFileId(file);
 		
-		Header header = new Header("DELETE", "1.0", Peer.getPeerId(), fileId, 0, 0);
+		Header header = new Header("DELETE", "1.0", Peer.getPeer_id(), fileId, 0, 0);
 		Message delete_message = new Message(Peer.getMcChannel().getSocket(), Peer.getMcChannel().getAddr(), header, null);
 		new Thread(delete_message).start();
 		
@@ -33,7 +33,7 @@ public class Delete extends Thread{
 	
 	//Get File Id
 		public static String getFileId(File file) {
-			return sha256(file.getName() + file.lastModified() + Peer.getPeerId());
+			return sha256(file.getName() + file.lastModified() + Peer.getPeer_id());
 		}
 		
 		

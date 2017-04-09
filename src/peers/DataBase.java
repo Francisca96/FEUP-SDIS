@@ -28,7 +28,7 @@ public class DataBase implements Serializable {
 		chunksBackedUp = new HashMap<String, ChunksList>();
 		chunksSaved = new HashMap<String, ChunksList>();
 		backedUpFiles = new BackedUpFiles();
-		chunks = new File("../res/" + "chunks_" + Peer.getPeerId());
+		chunks = new File("../res/" + "chunks_" + Peer.getPeer_id());
 		usedSpace = 0;
 		createFolders();
 	}

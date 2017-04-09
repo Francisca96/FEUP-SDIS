@@ -6,12 +6,12 @@ package utilities;
 public class Header {
     private static String messageType;
     private static String version;
-    private static int senderId;
+    private static String senderId;
     private static String fileId;
     private static int chunkNo;
     private static int replicationDeg;
 
-    public Header (String messageType, String version, int senderId, String fileId, int chunkNo, int replicationDeg){
+    public Header (String messageType, String version, String senderId, String fileId, int chunkNo, int replicationDeg){
         this.messageType = messageType;
         this.version = version;
         this.senderId = senderId;
@@ -37,11 +37,11 @@ public class Header {
         Header.version = version;
     }
 
-    public static int getSenderId() {
+    public static String getSenderId() {
         return senderId;
     }
 
-    public static void setSenderId(int senderId) {
+    public static void setSenderId(String senderId) {
         Header.senderId = senderId;
     }
 
