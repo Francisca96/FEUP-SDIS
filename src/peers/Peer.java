@@ -23,9 +23,6 @@ import javax.xml.crypto.Data;
  */
 public class Peer {
 
-    /* Needed for Mac OS X */
-    System.setProperty("java.net.preferIPv4Stack", "true");
-
     //Server Id
     private static int peerId;
     //Ports
@@ -44,18 +41,21 @@ public class Peer {
     private static DataBase data;
 
     public static void main(String[] args) throws IOException {
+        /* Needed for Mac OS X */
+        System.setProperty("java.net.preferIPv4Stack", "true");
+
         if (!checkArguments(args)) {
             return;
         }
 
-        //mcChannel = new McChannel(mcAddr, mcPort);
+        mcChannel = new McChannel(mcAddr, mcPort);
         mdbChannel = new MdbChannel(mcAddr, mcPort);
-        //mdrChannel = new MdrChannel(mcAddr, mcPort);
+        mdrChannel = new MdrChannel(mcAddr, mcPort);
 
         //Channel Listening
-        mcChannel.thread.start();
+        //mcChannel.thread.start();
         mdbChannel.thread.start();
-        mdrChannel.thread.start();
+        //mdrChannel.thread.start();
 
         loadData();
         protocoles();
