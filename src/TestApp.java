@@ -6,9 +6,6 @@ import java.rmi.NotBoundException;
 import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
 
-/**
- * Created by Francisca on 29/03/17.
- */
 public class TestApp {
     private static String remote_obj_name;
     private static String operation;
@@ -83,36 +80,11 @@ public class TestApp {
         return true;
     }
 
-
-    public static String getRemote_obj_name() {
-        return remote_obj_name;
-    }
-
     public static void setRemote_obj_name(String remote_obj_name) {
         TestApp.remote_obj_name = remote_obj_name;
     }
-
-    public static String getOperation() {
-        return operation;
-    }
-
+    
     public static void setOperation(String operation) {
         TestApp.operation = operation;
-    }
-
-    public static String getFile_name() {
-        return file_name;
-    }
-
-    public static void setFile_name(String file_name) {
-        TestApp.file_name = file_name;
-    }
-
-    public static int getReplication_deg() {
-        return replication_deg;
-    }
-
-    public static void setReplication_deg(int replication_deg) {
-        TestApp.replication_deg = replication_deg;
     }
 }

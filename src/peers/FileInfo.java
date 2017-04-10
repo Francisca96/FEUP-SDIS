@@ -3,9 +3,7 @@ package peers;
 import java.io.Serializable;
 
 public class FileInfo implements Serializable {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 	private String fileName;
 	private String fileId;
@@ -25,11 +23,4 @@ public class FileInfo implements Serializable {
 	public int getNumberOfChunks() {
 		return numberOfChunks;
 	}
-	public String getFileName() {
-		return fileName;
-	}
-	public int getFileSize() {
-		return fileSize;
-	}
-	
 }

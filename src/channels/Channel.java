@@ -22,36 +22,12 @@ public class Channel{
         this.socket.setTimeToLive(1);
     }
 
-	public Thread getThread() {
-		return thread;
-	}
-
-	public void setThread(Thread thread) {
-		this.thread = thread;
-	}
-
 	public MulticastSocket getSocket() {
 		return socket;
 	}
 
-	public void setSocket(MulticastSocket socket) {
-		this.socket = socket;
-	}
-
 	public InetAddress getAddr() {
 		return addr;
-	}
-
-	public void setAddr(InetAddress addr) {
-		this.addr = addr;
-	}
-
-	public int getport_number() {
-		return port_number;
-	}
-
-	public void setport_number(int port_number) {
-		this.port_number = port_number;
 	}
 	
     //Gets a byte[] from a determined index to the end - USE TO BODY

@@ -13,14 +13,8 @@ import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 
-import javax.xml.crypto.Data;
-
-/**
- * Created by Francisca on 27/03/17.
- */
 public class Peer {
 
     //Server Id
@@ -164,48 +158,16 @@ public class Peer {
         Peer.peer_id = peer_id;
     }
 
-    public static int getMcPort() {
-        return mcPort;
-    }
-
     public static void setMcPort(int mcPort) {
         Peer.mcPort = mcPort;
-    }
-
-    public static int getMdbPort() {
-        return mdbPort;
-    }
-
-    public static void setMdbPort(int mdbPort) {
-        Peer.mdbPort = mdbPort;
-    }
-
-    public static int getMdrPort() {
-        return mdrPort;
-    }
-
-    public static void setMdrPort(int mdrPort) {
-        Peer.mdrPort = mdrPort;
-    }
-
-    public static InetAddress getMcAddr() {
-        return mcAddr;
     }
 
     public static void setMcAddr(InetAddress mcAddr) {
         Peer.mcAddr = mcAddr;
     }
 
-    public static InetAddress getMdbAddr() {
-        return mdbAddr;
-    }
-
     public static void setMdbAddr(InetAddress mdbAddr) {
         Peer.mdbAddr = mdbAddr;
-    }
-
-    public static InetAddress getMdrAddr() {
-        return mdrAddr;
     }
 
     public static void setMdrAddr(InetAddress mdrAddr) {
@@ -216,39 +178,15 @@ public class Peer {
         return mcChannel;
     }
 
-    public static void setMcChannel(McChannel mcChannel) {
-        Peer.mcChannel = mcChannel;
-    }
-
     public static MdbChannel getMdbChannel() {
         return mdbChannel;
-    }
-
-    public static void setMdbChannel(MdbChannel mdbChannel) {
-        Peer.mdbChannel = mdbChannel;
     }
 
     public static MdrChannel getMdrChannel() {
         return mdrChannel;
     }
 
-    public static void setMdrChannel(MdrChannel mdrChannel) {
-        Peer.mdrChannel = mdrChannel;
-    }
-
     public static DataBase getData() {
         return data;
-    }
-
-    public static void setData(DataBase data) {
-        Peer.data = data;
-    }
-
-    public static DatagramSocket getSocket() {
-        return socket;
-    }
-
-    public static void setSocket(DatagramSocket socket) {
-        Peer.socket = socket;
     }
 }

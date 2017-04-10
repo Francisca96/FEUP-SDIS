@@ -3,9 +3,6 @@ package peers;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-/**
- * Created by Francisca on 29/03/17.
- */
 public interface Services extends Remote {
 
     String backup(String file_name, int replication_deg) throws RemoteException;

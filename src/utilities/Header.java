@@ -1,8 +1,5 @@
 package utilities;
 
-/**
- * Created by Francisca on 28/03/17.
- */
 public class Header {
     private static String messageType;
     private static String version;
@@ -33,24 +30,12 @@ public class Header {
         return version;
     }
 
-    public static void setVersion(String version) {
-        Header.version = version;
-    }
-
     public static String getSenderId() {
         return senderId;
     }
 
-    public static void setSenderId(String senderId) {
-        Header.senderId = senderId;
-    }
-
     public String getFileId() {
         return fileId;
-    }
-
-    public static void setFileId(String fileId) {
-        Header.fileId = fileId;
     }
 
     public int getChunkNo() {
@@ -64,9 +49,4 @@ public class Header {
     public static int getReplicationDeg() {
         return replicationDeg;
     }
-
-    public static void setReplicationDeg(int replicationDeg) {
-        Header.replicationDeg = replicationDeg;
-    }
-
 }

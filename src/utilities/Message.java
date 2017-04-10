@@ -5,9 +5,6 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 
-/**
- * Created by Francisca on 28/03/17.
- */
 public class Message implements Runnable{
     private byte[] body;
     private Header header;

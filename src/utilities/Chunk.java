@@ -4,9 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Chunk implements Serializable {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 	String fileId;
 	int chunkNo;
@@ -36,12 +34,11 @@ public class Chunk implements Serializable {
 	public String getFileId() {
 		return fileId;
 	}
-	public int getChunkSize() {
-		return chunkSize;
-	}
+
 	public int getReplicationDeg() {
 		return replicationDeg;
 	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

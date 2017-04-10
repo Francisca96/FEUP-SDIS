@@ -1,7 +1,6 @@
 package subprotocols;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.security.MessageDigest;
@@ -15,10 +14,6 @@ import utilities.Chunk;
 import utilities.Header;
 import utilities.Message;
 
-
-/**
- * Created by Francisca on 28/03/17.
- */
 public class Backup extends Thread {
     private File file;
     private int replicationDeg;
@@ -200,6 +195,4 @@ public class Backup extends Thread {
 			throw new RuntimeException(ex);
 		}
 	}
-		
-
 }

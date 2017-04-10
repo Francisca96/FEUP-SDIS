@@ -44,48 +44,20 @@ public class DataBase implements Serializable {
 		return receivedStoreMessages;
 	}
 
-	public void setReceivedStoreMessages(HashMap<Chunk, ArrayList<Header>> receivedStoreMessages) {
-		this.receivedStoreMessages = receivedStoreMessages;
-	}
-
 	public HashMap<String, ChunksList> getChunksBackedUp() {
 		return chunksBackedUp;
-	}
-
-	public void setChunksBackedUp(HashMap<String, ChunksList> chunksBackedUp) {
-		this.chunksBackedUp = chunksBackedUp;
 	}
 
 	public HashMap<String, ChunksList> getChunksSaved() {
 		return chunksSaved;
 	}
 
-	public void setChunksSaved(HashMap<String, ChunksList> chunksSaved) {
-		this.chunksSaved = chunksSaved;
-	}
-
 	public BackedUpFiles getBackedUpFiles() {
 		return backedUpFiles;
 	}
 
-	public void setBackedUpFiles(BackedUpFiles backedUpFiles) {
-		this.backedUpFiles = backedUpFiles;
-	}
-
 	public int getUsedSpace() {
 		return usedSpace;
-	}
-
-	public void setUsedSpace(int usedSpace) {
-		this.usedSpace = usedSpace;
-	}
-
-	public File getChunks() {
-		return chunks;
-	}
-
-	public void setChunks(File chunks) {
-		this.chunks = chunks;
 	}
 	
 	public static boolean repDegAchieved(Header header) {
@@ -125,7 +97,7 @@ public class DataBase implements Serializable {
 	public boolean chunkIsStored(String fileId, int chunkNo) {
 		ChunksList chunksList = chunksSaved.get(fileId) != null ? chunksSaved.get(fileId) : null;
 		if (chunksList == null) {
-			System.out.println("chunksList not found");
+			System.out.println("ChunksList not found");
 			return false;
 		}
 		for (int i = 0; i < chunksList.size(); i++)  {
@@ -205,7 +177,7 @@ public class DataBase implements Serializable {
 		} 
 		boolean iHaveIt = chunksSaved.get(header.getFileId()) != null  && chunksSaved.get(header.getFileId()).contains(chunkInfo) ? true : false;
 		if (!iHaveIt) {
-			System.out.println("I dont have this chunk");
+			System.out.println("I don't have this chunk");
 			return null;
 		}
 		int replication = headers.size() + 1;
@@ -221,7 +193,4 @@ public class DataBase implements Serializable {
 		}
 		return null;
 	}
-	
-	
-
 }

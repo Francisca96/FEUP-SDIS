@@ -1,14 +1,11 @@
 package channels;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.net.MulticastSocket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 import peers.Peer;
@@ -37,19 +34,19 @@ public class McChannel extends Channel{
 				try {
 					socket.joinGroup(addr);
 					
-					//separate header and body from data
+					//Separate header and body from data
                     byte[] buf = new byte[64 * 1000];
                     DatagramPacket packet = new DatagramPacket(buf, buf.length);
                     socket.receive(packet);
                     String data = new String(packet.getData(), 0, packet.getLength());
 
-                    //Separete Header
+                    //Separate Header
                     String[] dataArray = data.split("\\r\\n\\r\\n");
                     Header header = getHeader(dataArray);
                     String message_type = header.getMessageType();
                     String sender_id = header.getSenderId();
 
-                    //Separete Body
+                    //Separate Body
                     int offsetOfBody = dataArray[0].length() + 4;
                     byte[] bodyByteArray = getArrayFromOffset(packet.getData(), offsetOfBody, packet.getLength());
 					
@@ -137,21 +134,9 @@ public class McChannel extends Channel{
 		Backup.sendChunk(header, chunk_tmp);
 	}
 
-
-	//
-	public ArrayList<Message> getreplies_stored() {
-		return replies_stored;
-	}
-
-	public void setreplies_stored(ArrayList<Message> replies_stored) {
-		this.replies_stored = replies_stored;
-	}
-
 	public static void setReceivedPutchunk(boolean waitting_putchunk) {
 		McChannel.waitting_putchunk = waitting_putchunk;
 	}
-	
-	
 
 	public ArrayList<Message> getReplies_stored() {
 		return replies_stored;
