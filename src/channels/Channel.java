@@ -30,21 +30,22 @@ public class Channel{
 		return addr;
 	}
 	
-    //Gets a byte[] from a determined index to the end - USE TO BODY
-    public byte[] getArrayFromOffset(byte[] data, int offsetOfBody, int length) {
-        int size = length - offsetOfBody;
-        byte[] toRet = new byte[size];
 
-        for(int i = offsetOfBody; i < length; i++) {
-            toRet[i - offsetOfBody] = data[i];
+    public byte[] getArrayFromOffset(byte[] data, int body_length, int length) {
+        int size = length - body_length;
+        
+        byte[] tmp = new byte[size];
+
+        for(int i = body_length; i < length; i++) {
+        	tmp[i - body_length] = data[i];
         }
 
-        return toRet;
+        return tmp;
     }
 
     //USE TO HEADER
-    public Header getHeader(String[] dataArray){
-        String headerMsg = dataArray[0];
+    public Header getHeader(String[] data){
+        String headerMsg = data[0];
         String[] headerTokens = headerMsg.split("\\s+");
         String messageType = headerTokens[0];
         String version = headerTokens[1];

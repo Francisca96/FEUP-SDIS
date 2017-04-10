@@ -36,11 +36,11 @@ public class Restore extends Thread{
 		FileManage file = Peer.getData().get_file_backup().get(file_name);
 		
 		String peer_id = Peer.getPeer_id();
-		String file_id = file.getFileId();
+		String file_id = file.get_file_id();
 		header = new Header("GETCHUNK", "1.0", peer_id, file_id, 0, 0);
 		
 		Peer.getMdrChannel().setWaitingChunks(true);
-		sendChunk();
+		send_chunk();
 	}
 
 	public static String getFile_name() {
@@ -55,7 +55,7 @@ public class Restore extends Thread{
 		return number_of_chunks;
 	}
 	
-	public static void loadDefaults() {
+	public static void init_restore() {
 		file = new byte[0];
 		number_of_chunks = 0;
 	}
@@ -68,7 +68,7 @@ public class Restore extends Thread{
 		number_of_chunks++;
 	}
 
-	public static void sendChunk() {
+	public static void send_chunk() {
 		header.setChunkNo(number_of_chunks);
 		message = new Message(Peer.getMcChannel().getSocket(), Peer.getMcChannel().getAddr(), header, null);
 		new Thread(message).start();

@@ -17,24 +17,23 @@ public class Reclaim extends Thread{
 	}
 	
 	public void run() {
-		//View if the peer is alone or if peer has lower space to use
+		
 		if (reclaim_space > Peer.getData().get_space_use()) {
-			System.out.println("Will delete all chunks.");
 			reclaim_space = Peer.getData().get_space_use();
 		}
 		
-		List_of_chunks allChunks = new List_of_chunks();
+		List_of_chunks all_chunks = new List_of_chunks();
 		HashMap<String, List_of_chunks> tmp = Peer.getData().get_chunks_save();
 		for (List_of_chunks chunks : tmp.values()) {
-		    allChunks.addAll(chunks);
+		    all_chunks.addAll(chunks);
 		}
 		
 		//Missing create chunks to delete!
-		ArrayList<Chunk> chunksToDelete = null;
+		ArrayList<Chunk> delete_chunks = null;
 		
-		while (chunksToDelete.size() > 0) {
-			Peer.getData().delete_chunk(chunksToDelete.get(0));
-			chunksToDelete.remove(0);
+		while (delete_chunks.size() > 0) {
+			Peer.getData().delete_chunk(delete_chunks.get(0));
+			delete_chunks.remove(0);
 		}
 	}
 	

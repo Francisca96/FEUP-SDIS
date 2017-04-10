@@ -16,20 +16,21 @@ import utilities.Message;
 
 public class McChannel extends Channel{
 
-	private static boolean waitting_putchunk = false;
+	
 	ArrayList<Message> replies_stored;
+	private static boolean waitting_putchunk = false;
 	
 	//Constructor
     public McChannel(InetAddress addr, int port) throws IOException {
         super(addr, port);
-        this.replies_stored = new ArrayList<>();
         this.thread = new MulticastThread();
+        this.replies_stored = new ArrayList<>();
     }
    
     //Thread
     public class MulticastThread extends Thread {
 		public void run() {
-			System.out.println("Listening the MC channel...");
+			System.out.println("Mc channel");
 			while(true) {
 				try {
 					socket.joinGroup(addr);
@@ -51,12 +52,11 @@ public class McChannel extends Channel{
                     byte[] bodyByteArray = getArrayFromOffset(packet.getData(), offsetOfBody, packet.getLength());
 					
                     Message message = new Message(header,bodyByteArray);
-					
+                    System.out.println(message_type);
 					if(Peer.getPeer_id() != sender_id) {
 						switch (message_type) {
 						case "GETCHUNK":
-							System.out.println("GETCHUNK");
-							if (!Peer.getData().check_stored(header.getFileId(), header.getChunkNo())) {
+							if (!Peer.getData().check_stored(header.get_file_id(), header.get_chunk_number())) {
 								System.out.println("Chunk is not stored");
 								break;
 							}
@@ -64,8 +64,8 @@ public class McChannel extends Channel{
 							//Handle
 							String version = Peer.getProtocole_version();
 							String peer_id = Peer.getPeer_id();
-							String file_id = header.getFileId();
-							int chunk_number = header.getChunkNo();
+							String file_id = header.get_file_id();
+							int chunk_number = header.get_chunk_number();
 							Header reply_header = new Header("CHUNK", version, peer_id, file_id, chunk_number, 0);
 							
 							
@@ -76,20 +76,16 @@ public class McChannel extends Channel{
 							new Thread(reply).start();
 							
 							break;
-						case "STORED":
-							System.out.println("STORED");
-							replies_stored.add(message);
-							Peer.getData().add_receive_message(header);
-							break;
 						case "DELETE":
-							System.out.println("DELETE");
 							Peer.getData().clear_store(header);
 							break;
-						}
-					} 
+						case "STORED":
+							Peer.getData().add_receive_message(header);
+							break;
+					}
+					}
 					switch (message_type) {
 					case "REMOVED":
-						System.out.println("REMOVED");
 						removed(header);
 						break;
 				}
@@ -119,20 +115,20 @@ public class McChannel extends Channel{
 	}
 
 	private void prepareChunk(Chunk chunk) throws IOException {
-		String fileName = "chunks_" + Peer.getPeer_id() + "/" + chunk.getFileId() + "/" + chunk.getChunkNo() + ".data";
-		String chunkPath = "../res/" + fileName;
+		String file_name = "chunks_" + Peer.getPeer_id() + "/" + chunk.get_file_id() + "/" + chunk.get_chunk_number() + ".data";
+		String path = "../res/" + file_name;
 		
 		byte[] chunk_tmp = null;
 	
-		chunk_tmp = Files.readAllBytes(Paths.get(chunkPath));
+		chunk_tmp = Files.readAllBytes(Paths.get(path));
 		
 		String version = Peer.getProtocole_version();
 		String peer_id = Peer.getPeer_id();
-		String file_id = chunk.getFileId();
-		int chunk_number = chunk.getChunkNo();
-		int rep_deg = chunk.getReplicationDeg();
+		String file_id = chunk.get_file_id();
+		int chunk_number = chunk.get_chunk_number();
+		int rep_deg = chunk.get_replication_deg();
 		Header header = new Header("PUTCHUNK", version, peer_id, file_id, chunk_number, rep_deg);
-		Backup.sendChunk(header, chunk_tmp);
+		Backup.send_chunk(header, chunk_tmp);
 	}
 
 	public static void setReceivedPutchunk(boolean waitting_putchunk) {
@@ -147,10 +143,9 @@ public class McChannel extends Channel{
 		
 		String version = Peer.getProtocole_version();
 		String peer_id = Peer.getPeer_id();
-		String file_id = chunk.getFileId();
-		int chunk_number = chunk.getChunkNo();
+		String file_id = chunk.get_file_id();
+		int chunk_number = chunk.get_chunk_number();
 		Header header = new Header("REMOVED", version, peer_id,file_id,chunk_number,0);
-		
 		Message message = new Message(Peer.getMcChannel().getSocket(), Peer.getMcChannel().getAddr(), header, null);
 		new Thread(message).start();
 		

@@ -6,40 +6,41 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 
 public class Message implements Runnable{
+	private InetAddress addr;
+    private MulticastSocket socket;
     private byte[] body;
     private Header header;
-    private InetAddress addr;
-    private MulticastSocket socket;
 
     public Message(Header header, byte[] body){
-        this.header = header;
-        this.body = body;
-        this.socket = null;
         this.addr = null;
+    	this.socket = null;
+    	this.header = header;
+        this.body = body;
+        
     }
 
-    //To know the socket and adress of a channel
+
     public Message(MulticastSocket socket, InetAddress addr, Header header, byte[] body){
-        this.header = header;
+    	this.addr = addr;
+    	this.socket = socket;
+    	this.header = header;
         this.body = body;
-        this.socket = socket;
-        this.addr = addr;
+        
+       
     }
     
     public void run() {
-		System.out.println("Sending " + header.getMessageType());
-		byte[] headerBytes = header.toString().getBytes();
+		
 		byte[] message = {};
+		byte[] header_bytes = header.toString().getBytes();
 		
 		if (body != null) {
-			message = concatenateBytes(headerBytes, body);
+			message = concatenateBytes(header_bytes, body);
 		} else {
-			message = headerBytes;
+			message = header_bytes;
 		}
 		
-		DatagramPacket packet = new DatagramPacket(message,
-				message.length, addr,
-				socket.getLocalPort());
+		DatagramPacket packet = new DatagramPacket(message,message.length, addr,socket.getLocalPort());
 		try {
 			socket.send(packet);
 		} catch (IOException e) {

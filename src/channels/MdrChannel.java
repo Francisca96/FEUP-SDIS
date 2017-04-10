@@ -20,7 +20,7 @@ public class MdrChannel extends Channel{
     
     public class MdrThread extends Thread {
 		public void run() {
-			System.out.println("Listening the MDR channel...");
+			System.out.println("Mdr channel");
 			while(true) {
 				try {
 					socket.joinGroup(addr);
@@ -39,11 +39,13 @@ public class MdrChannel extends Channel{
                     byte[] bodyByteArray = getArrayFromOffset(packet.getData(), offsetOfBody, packet.getLength());
                     
                     //Use data
+                    String message_type = header.getMessageType();
+                    System.out.println(message_type);
 					if(!Peer.getPeer_id().equals(header.getSenderId())) {
-						switch (header.getMessageType()) {
+						switch (message_type) {
 						case "CHUNK":
 							if (chunks_waiting) {
-								int chunkNum = header.getChunkNo();
+								int chunkNum = header.get_chunk_number();
 								
 								//Handle
 								int size = 64*1000;
@@ -52,8 +54,7 @@ public class MdrChannel extends Channel{
 								}
 								else{
 									System.out.println("Cant restore");
-								}
-								
+								}					
 							}
 							break;
 						}
@@ -74,13 +75,13 @@ public class MdrChannel extends Channel{
 			Peer.getMdrChannel().setWaitingChunks(false);
 			Restore.getNew_output().close();
 			System.out.println("Restore finish!");
-			if (Restore.get_number_of_chunks() != file.getNumberOfChunks()){
+			if (Restore.get_number_of_chunks() != file.get_chunks_number()){
 					System.out.println("The number of received chunks is different the number of chunks in this file");
 				}
-			Restore.loadDefaults();
+			Restore.init_restore();
 		} else {
 			Restore.inc_number_of_chunks();
-			Restore.sendChunk();
+			Restore.send_chunk();
 		}
 	}
 

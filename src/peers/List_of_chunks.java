@@ -9,9 +9,9 @@ public class List_of_chunks extends ArrayList<Chunk> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	public void addChunk(Chunk chunk) {
+	public void add_chunk(Chunk chunk) {
 		for (int i = 0; i < this.size(); i++) {
-			if (chunk.getChunkNo() == this.get(i).getChunkNo())
+			if (chunk.get_chunk_number() == this.get(i).get_chunk_number())
 				return;
 		}
 		this.add(chunk);

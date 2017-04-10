@@ -15,28 +15,38 @@ import utilities.Chunk;
 import utilities.Header;
 
 public class DataBase implements Serializable {
+	
+
+	Files_backup files_backup;
+	int space_use;
+	File original_final;
+	
 	HashMap<Chunk, ArrayList<Header>> stored_messages;
 
-	HashMap<String, List_of_chunks> chunks_backup; //FileId as key, Array of ChuksList as value
-	HashMap<String, List_of_chunks> chunks_save; //FileId as key, Array of ChunkNo as value
-
-	Files_backup files_backup; //HashMap containing which files are backed up, fileName as Keys
-	int space_use;
-	File chunks;
+	HashMap<String, List_of_chunks> chunks_backup;
+	HashMap<String, List_of_chunks> chunks_save; 
 	
 	public DataBase() {
-		stored_messages = new HashMap<Chunk, ArrayList<Header>>();
-		chunks_backup = new HashMap<String, List_of_chunks>();
-		chunks_save = new HashMap<String, List_of_chunks>();
 		files_backup = new Files_backup();
-		chunks = new File("../res/" + "chunks_" + Peer.getPeer_id());
+		original_final = new File("../res/" + "chunks_" + Peer.getPeer_id());
 		space_use = 0;
 		
-		if (!chunks.exists())
-			chunks.mkdirs();
+		initialize_hashMap();
+		
+		
+		boolean exist = original_final.exists();
+		if (!exist)
+			original_final.mkdirs();
 		
 	}
 	
+	private void initialize_hashMap() {
+		stored_messages = new HashMap<Chunk, ArrayList<Header>>();
+		chunks_backup = new HashMap<String, List_of_chunks>();
+		chunks_save = new HashMap<String, List_of_chunks>();
+		
+	}
+
 	//Getters
 	public HashMap<Chunk, ArrayList<Header>> get_stored_messages() {
 		return stored_messages;
@@ -59,21 +69,25 @@ public class DataBase implements Serializable {
 	}
 	
 	public static boolean replication_complete(Header header) {
-		Chunk chunk = new Chunk(header);
 		HashMap<Chunk, ArrayList<Header>> stores = Peer.getData().get_stored_messages();
 		int replication = header.getReplicationDeg();
+		Chunk chunk = new Chunk(header);
 		if ((stores.get(chunk) != null) && (stores.get(chunk).size() >= replication))
 				return true;
 		return false;
 	}
 
 	public void save_chunk(Header header, byte[] body) throws IOException {
-		File folder = new File(chunks.getPath() + "/" + header.getFileId() + "/");
+		String path = original_final.getPath();
+		String file_id = header.get_file_id();
 		
-		if (!folder.exists())
+		File folder = new File(path + "/" + file_id + "/");
+		
+		boolean exist = folder.exists();
+		if (!exist)
 			folder.mkdirs();
 		
-		int chunk_number = header.getChunkNo();
+		int chunk_number = header.get_chunk_number();
 		FileOutputStream stream = new FileOutputStream(folder.getPath() + "/" + chunk_number + ".data");
 	
 		if (body != null)
@@ -81,20 +95,20 @@ public class DataBase implements Serializable {
 		
 		stream.close();
 		List_of_chunks chunks = null;
-		if(chunks_save.get(header.getFileId()) != null)
-			chunks = chunks_save.get(header.getFileId());
+		if(chunks_save.get(header.get_file_id()) != null)
+			chunks = chunks_save.get(header.get_file_id());
 		else
 			new List_of_chunks();
 			
 		Chunk chunk = new Chunk(header);
 		
 		if (body != null) {
-			chunk.setChunkSize((int)body.length);
+			chunk.set_chunk_size((int)body.length);
 			int space_tmp = space_use;
 			space_use = space_tmp + body.length;
 		}
-		chunks.addChunk(chunk);
-		chunks_save.put(header.getFileId(), chunks);
+		chunks.add_chunk(chunk);
+		chunks_save.put(header.get_file_id(), chunks);
 	}
 
 
@@ -108,10 +122,10 @@ public class DataBase implements Serializable {
 			return false;
 		}
 		for (int i = 0; i < list_chunks.size(); i++)  {
-			if (list_chunks.get(i).getChunkNo() == chunk_number)
+			if (list_chunks.get(i).get_chunk_number() == chunk_number)
 				return true;
 		}
-		System.out.println("Chunk not stored");
+		System.out.println("Chunk is not stored");
 		return false;
 	}
 
@@ -130,22 +144,27 @@ public class DataBase implements Serializable {
 	}
 
 	public byte[] get_chunk_body(String fileId, int chunkNo) throws IOException {
-		Path chunk = Paths.get(chunks.getPath() + "/" + fileId + "/" + chunkNo + ".data");
+		Path chunk = Paths.get(original_final.getPath() + "/" + fileId + "/" + chunkNo + ".data");
 		return Files.readAllBytes(chunk);
 	}	
 
 	public void clear_store(Header header) {
-		if (chunks_save.get(header.getFileId()) != null) {
-			chunks_save.remove(header.getFileId());
+		if (chunks_save.get(header.get_file_id()) != null) {
+			chunks_save.remove(header.get_file_id());
 		}
 		
 	}
 
 	public int delete_chunk(Chunk chunk) {
-		File file = new File(chunks.getPath() + "/" + chunk.getFileId() + "/" + chunk.getChunkNo() + ".data");
+		String path = original_final.getPath();
+		String file_id = chunk.get_file_id();
+		int chunk_number = chunk.get_chunk_number();
+		
+		File file = new File(path + "/" + file_id + "/" + chunk_number + ".data");
 		int size = (int) file.length();
-		if(file.delete()){
-			List_of_chunks all_chunks = chunks_save.get(chunk.getFileId());
+		boolean delete = file.delete();
+		if(delete){
+			List_of_chunks all_chunks = chunks_save.get(chunk.get_file_id());
 			all_chunks.remove(chunk);
 			McChannel.sendRemoved(chunk);
 			int space_tmp = space_use;
@@ -172,16 +191,16 @@ public class DataBase implements Serializable {
 			headers.remove(header);
 		}
 		
-		if((chunks_save.get(header.getFileId()) == null)  || (!chunks_save.get(header.getFileId()).contains(chunk))){
-			System.out.println("I don't have this chunk");
+		if((chunks_save.get(header.get_file_id()) == null)  || (!chunks_save.get(header.get_file_id()).contains(chunk))){
+			System.out.println("chunk doesnt exist");
 			return null;}
 
 		int replication = headers.size() + 1;
 		int replication_deg = -1;
 		
-		for (Chunk info : chunks_save.get(header.getFileId())) {
+		for (Chunk info : chunks_save.get(header.get_file_id())) {
 			if (info == chunk) {
-				replication_deg = info.getReplicationDeg();
+				replication_deg = info.get_replication_deg();
 				if (replication < replication_deg)
 					return info;
 				else

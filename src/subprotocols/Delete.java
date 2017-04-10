@@ -20,7 +20,7 @@ public class Delete extends Thread{
 		
 		String version = Peer.getProtocole_version();
 		String peer_id = Peer.getPeer_id();
-		String file_id = getFileId(file);
+		String file_id = getFile_id(file);
 		
 		Header header = new Header("DELETE", version, peer_id, file_id, 0, 0);
 		Message delete_message = new Message(Peer.getMcChannel().getSocket(), Peer.getMcChannel().getAddr(), header, null);
@@ -35,7 +35,7 @@ public class Delete extends Thread{
 	}
 	
 	//Get File Id
-	public static String getFileId(File file) {
+	public static String getFile_id(File file) {
 		return sha256(file.getName() + file.lastModified() + Peer.getPeer_id());
 	}
 	

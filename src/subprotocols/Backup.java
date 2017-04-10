@@ -17,7 +17,7 @@ import utilities.Message;
 public class Backup extends Thread {
     private File file;
     private int replicationDeg;
-    static ArrayList<Header> validReplies;
+    static ArrayList<Header> valid_replies;
 
     public Backup(String fileName, int replicationDeg) {
         this.file = new File("../res/"+fileName);
@@ -46,7 +46,7 @@ public class Backup extends Thread {
     		while ((bytesRead = inputStream.read(buf)) != -1) {
     			byte[] body = Arrays.copyOfRange(buf, 0, bytesRead);
     			Header.setChunkNo(chunk_number);
-    			sendChunk(header, body);
+    			send_chunk(header, body);
     			chunk_number++;
     		}
     		
@@ -62,7 +62,7 @@ public class Backup extends Thread {
     }
 
 
-    public static void sendChunk(Header header, byte[] chunk) {
+    public static void send_chunk(Header header, byte[] chunk) {
     	
 		int chunksSent = 0;
 		int waitingTime = 500;
@@ -72,7 +72,7 @@ public class Backup extends Thread {
 			
 			//Create message
 			Message message = new Message(Peer.getMdbChannel().getSocket(), Peer.getMdbChannel().getAddr(), header, chunk);
-			validReplies = new ArrayList<>();
+			valid_replies = new ArrayList<>();
 			
 			//Send
 			new Thread(message).start();
@@ -83,19 +83,22 @@ public class Backup extends Thread {
 				e.printStackTrace();
 			}
 			
-			checkReplies(message);
-			List_of_chunks chunksList = Peer.getData().get_chunks_backup().get(header.getFileId()) != null ? Peer.getData().get_chunks_backup().get(header.getFileId()) : null;
+			check(message);
+			
+			List_of_chunks chunksList = null;
+			if(Peer.getData().get_chunks_backup().get(header.get_file_id()) != null)
+				chunksList = Peer.getData().get_chunks_backup().get(header.get_file_id());
 			int confirmedBackUps = 0;
 			Chunk thisChunkInfo = new Chunk(header, chunk.length);
 			//Getting BackUps
 			if (chunksList != null)
 				for (Chunk chunkInfo : chunksList)
 					if (chunkInfo.equals(thisChunkInfo))
-						confirmedBackUps = chunkInfo.getStoredHeaders().size();
+						confirmedBackUps = chunkInfo.get_headers().size();
 			//Checking if this Peer has the chunk stored
 			Chunk chunkInfo = new Chunk(header, chunk.length);
-			if (Peer.getData().get_chunks_save().get(header.getFileId()) != null) 
-				if (Peer.getData().get_chunks_save().get(header.getFileId()).contains(chunkInfo))
+			if (Peer.getData().get_chunks_save().get(header.get_file_id()) != null) 
+				if (Peer.getData().get_chunks_save().get(header.get_file_id()).contains(chunkInfo))
 					confirmedBackUps++;
 			
 			int repDeg = header.getReplicationDeg();
@@ -111,7 +114,7 @@ public class Backup extends Thread {
 	}
 	
 	
-	public static void checkReplies(Message message) {
+	public static void check(Message message) {
 		int replicationDeg = message.getHeader().getReplicationDeg();
 		Message reply;
 		ArrayList<Message> replies_stored = Peer.getMcChannel().getReplies_stored();
@@ -123,14 +126,14 @@ public class Backup extends Thread {
 			String message_type = header.getMessageType();
 			String sender_id = header.getSenderId();
 			String peer_id = Peer.getPeer_id();
-			String header_file_id = header.getFileId();
-			String message_file_id = message.getHeader().getFileId();
-			int header_chunk_number = header.getChunkNo();
-			int message_chunk_number = message.getHeader().getChunkNo();
+			String header_file_id = header.get_file_id();
+			String message_file_id = message.getHeader().get_file_id();
+			int header_chunk_number = header.get_chunk_number();
+			int message_chunk_number = message.getHeader().get_chunk_number();
 			
 			//Check if the reply is valid
 			if ((message_type == "STORED") && (sender_id != peer_id) && (header_file_id == message_file_id) && (header_chunk_number == message_chunk_number)) {
-				validReplies.add(header);
+				valid_replies.add(header);
 				counter++;
 			} 
 			Peer.getMcChannel().getReplies_stored().remove(replies_stored.get(i));
@@ -138,21 +141,20 @@ public class Backup extends Thread {
 		
 		//Checking if this peer has the chunk saved
 		Chunk chunk = new Chunk(message.getHeader(), message.getBody().length);
-		if (Peer.getData().get_chunks_save().get(message.getHeader().getFileId()) != null) 
-			if (Peer.getData().get_chunks_save().get(message.getHeader().getFileId()).contains(chunk))
+		if (Peer.getData().get_chunks_save().get(message.getHeader().get_file_id()) != null) 
+			if (Peer.getData().get_chunks_save().get(message.getHeader().get_file_id()).contains(chunk))
 				counter++;
 		
 		if (counter >= replicationDeg) {
-			System.out.println("RepDeg complete");
-			fillBase(message);
+			complete_database(message);
 		}
 			
 	}
 	
-	private static void fillBase(Message message) {
+	private static void complete_database(Message message) {
 		List_of_chunks chunks = null;
-		if(Peer.getData().get_chunks_backup().get(message.getHeader().getFileId()) != null)
-			chunks = Peer.getData().get_chunks_backup().get(message.getHeader().getFileId());
+		if(Peer.getData().get_chunks_backup().get(message.getHeader().get_file_id()) != null)
+			chunks = Peer.getData().get_chunks_backup().get(message.getHeader().get_file_id());
 		else
 			new List_of_chunks();
 		
@@ -164,11 +166,12 @@ public class Backup extends Thread {
 				break;
 			}
 		}
-		chunk.addToStoredHeaders(validReplies);
-		if (!chunks.contains(chunk))
+		chunk.add_header(valid_replies);
+		boolean state = chunks.contains(chunk);
+		if (!state)
 			chunks.add(chunk);
 		
-		Peer.getData().get_chunks_backup().put(message.getHeader().getFileId(), chunks);
+		Peer.getData().get_chunks_backup().put(message.getHeader().get_file_id(), chunks);
 	}
 	
 	//Get File Id
