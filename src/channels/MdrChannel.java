@@ -49,7 +49,7 @@ public class MdrChannel extends Channel{
 								
 								//Handle
 								int size = 64*1000;
-								if (bodyByteArray == null || (bodyByteArray.length <= size && chunkNum == Restore.getNumOfChunks())) {
+								if (bodyByteArray == null || (bodyByteArray.length <= size && chunkNum == Restore.get_number_of_chunks())) {
 									Peer.getData().saveRestoredChunk(Restore.getFile_name(), bodyByteArray);
 								}
 								else{
@@ -71,11 +71,11 @@ public class MdrChannel extends Channel{
     
 	private void handleChunk(int chunkNum, byte[] bodyByteArray) throws IOException {
 		int size = 64*1000;
-		if (bodyByteArray == null || (bodyByteArray.length <= size && chunkNum == Restore.getNumOfChunks())) {
+		if (bodyByteArray == null || (bodyByteArray.length <= size && chunkNum == Restore.get_number_of_chunks())) {
 			Peer.getData().saveRestoredChunk(Restore.getFile_name(), bodyByteArray);
 		}
 		else{
-			System.out.println("Chunk Num = " + chunkNum + " vs Stored chunk Num = " + Restore.getNumOfChunks());
+			System.out.println("Chunk Num = " + chunkNum + " vs Stored chunk Num = " + Restore.get_number_of_chunks());
 			System.out.println("The received chunk has" + bodyByteArray.length + " bytes.");
 		}
 	}
