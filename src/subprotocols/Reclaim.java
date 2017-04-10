@@ -7,12 +7,12 @@ import peers.List_of_chunks;
 import peers.Peer;
 import utilities.Chunk;
 
-public class Reclaim {
+public class Reclaim extends Thread{
 	
 	//space to be reclaim
 	int reclaim_space;
 	
-	Reclaim(int reclaim_space){
+	public Reclaim(int reclaim_space){
 		this.reclaim_space = reclaim_space;
 	}
 	
