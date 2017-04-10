@@ -20,63 +20,65 @@ public class MdbChannel extends Channel{
         this.thread = new MdbThread();
     }
     
-    
-    private void handlePutChunk(Header header, byte[] bodyByteArray) throws InterruptedException {
-		Peer.getData();
-		// file was backed up by this peer
-		for (FileInfo fileInfo : Peer.getData().getBackedUpFiles().values()) 
-		    if (fileInfo.getFileId().equals(header.getFileId()))
-		    	return;
-		//save chunk
-		try {
-			Peer.getData().saveChunk(header, bodyByteArray);
-		} catch (IOException e) {
-			System.out.println("Could not save the chunk " + header.getChunkNo() + "from file " + header.getFileId());
-			return;
-		}
-		//reply
-		Header replyHeader = new Header("STORED", header.getVersion(),
-				Peer.getPeer_id(), header.getFileId(), header.getChunkNo(), 0);
-		Message reply = new Message(Peer.getMcChannel().getSocket(), Peer.getMcChannel().getAddr(), replyHeader, null);
-		int timeout = ThreadLocalRandom.current().nextInt(0, 400);
-		Thread.sleep(timeout);
-		new Thread(reply).start();
-		System.out.println("Replying...");
-		
-	}
-
-    
-
     public class MdbThread extends Thread {
         public void run() {
             System.out.println("Listening the MDB channel...");
             while(true){
                 try{
                     socket.joinGroup(addr);
+                    
                     //separate header and body from data
                     byte[] buf = new byte[64 * 1000];
                     DatagramPacket packet = new DatagramPacket(buf, buf.length);
                     socket.receive(packet);
                     String data = new String(packet.getData(), 0, packet.getLength());
 
-                    //Separete Header
+                    //separate Header
                     String[] dataArray = data.split("\\r\\n\\r\\n");
                     Header header = getHeader(dataArray);
+                    String message_type = header.getMessageType();
+                    String sender_id = header.getSenderId();
 
-                    //Separete Body
+                    //separate Body
                     int offsetOfBody = dataArray[0].length() + 4;
                     byte[] bodyByteArray = getArrayFromOffset(packet.getData(), offsetOfBody, packet.getLength());
 
-                    if(Peer.getPeer_id() != header.getSenderId()) {
-						switch (header.getMessageType()) {
+                    
+                    if(Peer.getPeer_id() != sender_id) {
+						switch (message_type) {
 						case "PUTCHUNK":
-							System.out.println("Received PUTCHUNK");
-							if (DataBase.repDegAchieved(header) && header.getVersion().equals("1.2")) {
-								System.out.println("ReplicationDeg was already achieved! Ignoring chunk");
+							System.out.println("PUTCHUNK");
+							if (DataBase.repDegAchieved(header)) {
+								System.out.println("ReplicationDeg achived");
 								break;
 							}
 							McChannel.setReceivedPutchunk(true);
-							handlePutChunk(header, bodyByteArray);
+						
+							//Handle
+					    	
+							// Check if the file was not backed up by this peer
+							for (FileInfo fileInfo : Peer.getData().getBackedUpFiles().values()) 
+							    if (fileInfo.getFileId().equals(header.getFileId()))
+							    	return;
+							
+							//save chunk
+							Peer.getData().saveChunk(header, bodyByteArray);
+							
+							//reply
+							String version = header.getVersion();
+							String peer_id = Peer.getPeer_id();
+							String file_id = header.getFileId();
+							int chunk_number = header.getChunkNo();
+							
+							Header replyHeader = new Header("STORED", version, peer_id, file_id, chunk_number, 0);
+							Message reply = new Message(Peer.getMcChannel().getSocket(), Peer.getMcChannel().getAddr(), replyHeader, null);
+							
+							int timeout = ThreadLocalRandom.current().nextInt(0, 400);
+							Thread.sleep(timeout);
+							new Thread(reply).start();
+							
+							System.out.println("Replying...");
+							
 							break;
 						}
 					}

@@ -166,12 +166,12 @@ public class DataBase implements Serializable {
 			Peer.getMdrChannel().setWaitingChunks(false);
 			Restore.getNew_output().close();
 			System.out.println("File was restored!");
-			if (Restore.getNumOfChunks() != fileInfo.getNumberOfChunks()){
+			if (Restore.get_number_of_chunks() != fileInfo.getNumberOfChunks()){
 					System.out.println("The number of received chunks doesn't match the number of chunks in this file");
 				}
 			Restore.loadDefaults();
 		} else {
-			Restore.incNumOfChunks();
+			Restore.inc_number_of_chunks();
 			Restore.sendChunk();
 		}
 		

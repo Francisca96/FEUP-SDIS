@@ -3,7 +3,6 @@ package channels;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
-import java.util.Arrays;
 
 import utilities.Header;
 
@@ -12,14 +11,14 @@ public class Channel{
     public Thread thread;
     MulticastSocket socket;
     InetAddress addr;
-    private int port;
+    private int port_number;
 
-    public Channel(InetAddress addr, int port) throws IOException {
+    public Channel(InetAddress addr, int port_number) throws IOException {
         this.addr = addr;
-        this.port = port;
-        this.socket = new MulticastSocket(this.port);
+        this.port_number = port_number;
+        this.socket = new MulticastSocket(this.port_number);
 
-        //The initiator-peer collects the confirmation messages during a time interval of 1 second.
+        //Confirmation message in 1 second
         this.socket.setTimeToLive(1);
     }
 
@@ -47,12 +46,12 @@ public class Channel{
 		this.addr = addr;
 	}
 
-	public int getPort() {
-		return port;
+	public int getport_number() {
+		return port_number;
 	}
 
-	public void setPort(int port) {
-		this.port = port;
+	public void setport_number(int port_number) {
+		this.port_number = port_number;
 	}
 	
     //Gets a byte[] from a determined index to the end - USE TO BODY

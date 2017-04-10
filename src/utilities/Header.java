@@ -45,7 +45,7 @@ public class Header {
         Header.senderId = senderId;
     }
 
-    public static String getFileId() {
+    public String getFileId() {
         return fileId;
     }
 
@@ -53,7 +53,7 @@ public class Header {
         Header.fileId = fileId;
     }
 
-    public static int getChunkNo() {
+    public int getChunkNo() {
         return chunkNo;
     }
 

@@ -36,7 +36,7 @@ public class MdrChannel extends Channel{
                     String[] dataArray = data.split("\\r\\n\\r\\n");
                     Header header = getHeader(dataArray);
 
-                    //Separete Body
+                    //Separate Body
                     int offsetOfBody = dataArray[0].length() + 4;
                     byte[] bodyByteArray = getArrayFromOffset(packet.getData(), offsetOfBody, packet.getLength());
                     
@@ -46,12 +46,20 @@ public class MdrChannel extends Channel{
 						case "CHUNK":
 							if (chunks_waiting) {
 								int chunkNum = header.getChunkNo();
-								handleChunk(chunkNum, bodyByteArray);
+								
+								//Handle
+								int size = 64*1000;
+								if (bodyByteArray == null || (bodyByteArray.length <= size && chunkNum == Restore.getNumOfChunks())) {
+									Peer.getData().saveRestoredChunk(Restore.getFile_name(), bodyByteArray);
+								}
+								else{
+									System.out.println("Cant restore");
+								}
+								
 							}
 							break;
 						}
 					}
-                    
 					socket.leaveGroup(addr);
 				} catch (IOException e) {
                     e.printStackTrace();

@@ -19,7 +19,7 @@ public class Reclaim {
 	public void run() {
 		//View if the peer is alone or if peer has lower space to use
 		if (reclaim_space > Peer.getData().getUsedSpace()) {
-			System.out.println("Space to recover is bigger than the space used by this peer, will delete all chunks.");
+			System.out.println("Will delete all chunks.");
 			reclaim_space = Peer.getData().getUsedSpace();
 		}
 		
