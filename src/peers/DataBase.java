@@ -11,181 +11,178 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import channels.McChannel;
-import subprotocols.Restore;
 import utilities.Chunk;
 import utilities.Header;
 
 public class DataBase implements Serializable {
-	HashMap<Chunk, ArrayList<Header>> receivedStoreMessages;
+	HashMap<Chunk, ArrayList<Header>> stored_messages;
 
-	HashMap<String, ChunksList> chunksBackedUp; //FileId as key, Array of ChuksList as value
-	HashMap<String, ChunksList> chunksSaved; //FileId as key, Array of ChunkNo as value
+	HashMap<String, List_of_chunks> chunks_backup; //FileId as key, Array of ChuksList as value
+	HashMap<String, List_of_chunks> chunks_save; //FileId as key, Array of ChunkNo as value
 
-	BackedUpFiles backedUpFiles; //HashMap containing which files are backed up, fileName as Keys
-	int usedSpace;
+	Files_backup files_backup; //HashMap containing which files are backed up, fileName as Keys
+	int space_use;
 	File chunks;
 	
 	public DataBase() {
-		receivedStoreMessages = new HashMap<Chunk, ArrayList<Header>>();
-		chunksBackedUp = new HashMap<String, ChunksList>();
-		chunksSaved = new HashMap<String, ChunksList>();
-		backedUpFiles = new BackedUpFiles();
+		stored_messages = new HashMap<Chunk, ArrayList<Header>>();
+		chunks_backup = new HashMap<String, List_of_chunks>();
+		chunks_save = new HashMap<String, List_of_chunks>();
+		files_backup = new Files_backup();
 		chunks = new File("../res/" + "chunks_" + Peer.getPeer_id());
-		usedSpace = 0;
-		createFolders();
-	}
-
-	private void createFolders() {
+		space_use = 0;
+		
 		if (!chunks.exists())
 			chunks.mkdirs();
-	}
-
-	public HashMap<Chunk, ArrayList<Header>> getReceivedStoreMessages() {
-		return receivedStoreMessages;
-	}
-
-	public HashMap<String, ChunksList> getChunksBackedUp() {
-		return chunksBackedUp;
-	}
-
-	public HashMap<String, ChunksList> getChunksSaved() {
-		return chunksSaved;
-	}
-
-	public BackedUpFiles getBackedUpFiles() {
-		return backedUpFiles;
-	}
-
-	public int getUsedSpace() {
-		return usedSpace;
+		
 	}
 	
-	public static boolean repDegAchieved(Header header) {
-		Chunk chunkInfo = new Chunk(header);
-		HashMap<Chunk, ArrayList<Header>> stores = Peer.getData().getReceivedStoreMessages();
-		int repDeg = header.getReplicationDeg();
-		if (stores.get(chunkInfo) != null)
-			if (stores.get(chunkInfo).size() >= repDeg)
+	//Getters
+	public HashMap<Chunk, ArrayList<Header>> get_stored_messages() {
+		return stored_messages;
+	}
+
+	public HashMap<String, List_of_chunks> get_chunks_backup() {
+		return chunks_backup;
+	}
+
+	public HashMap<String, List_of_chunks> get_chunks_save() {
+		return chunks_save;
+	}
+
+	public Files_backup get_file_backup() {
+		return files_backup;
+	}
+
+	public int get_space_use() {
+		return space_use;
+	}
+	
+	public static boolean replication_complete(Header header) {
+		Chunk chunk = new Chunk(header);
+		HashMap<Chunk, ArrayList<Header>> stores = Peer.getData().get_stored_messages();
+		int replication = header.getReplicationDeg();
+		if ((stores.get(chunk) != null) && (stores.get(chunk).size() >= replication))
 				return true;
 		return false;
 	}
 
-	public void saveChunk(Header header, byte[] bodyByteArray) throws IOException {
-		File chunkFolder = new File(chunks.getPath() + "/" + header.getFileId() + "/");
-		if (!chunkFolder.exists())
-			chunkFolder.mkdirs();
-		FileOutputStream stream = new FileOutputStream(chunkFolder.getPath() + "/" + header.getChunkNo() + ".data");
-	
-		try {
-			if (bodyByteArray != null)
-				stream.write(bodyByteArray);
-		} finally {
-			stream.close();
-			ChunksList chunks = chunksSaved.get(header.getFileId()) != null ? chunksSaved.get(header.getFileId()) : new ChunksList();
-			
-			Chunk chunk = new Chunk(header);
-			if (bodyByteArray != null) {
-				chunk.setChunkSize((int)bodyByteArray.length);
-				usedSpace += bodyByteArray.length;
-			}
-			chunks.addChunk(chunk);
-			chunksSaved.put(header.getFileId(), chunks);
-		}
+	public void save_chunk(Header header, byte[] body) throws IOException {
+		File folder = new File(chunks.getPath() + "/" + header.getFileId() + "/");
 		
+		if (!folder.exists())
+			folder.mkdirs();
+		
+		int chunk_number = header.getChunkNo();
+		FileOutputStream stream = new FileOutputStream(folder.getPath() + "/" + chunk_number + ".data");
+	
+		if (body != null)
+			stream.write(body);
+		
+		stream.close();
+		List_of_chunks chunks = null;
+		if(chunks_save.get(header.getFileId()) != null)
+			chunks = chunks_save.get(header.getFileId());
+		else
+			new List_of_chunks();
+			
+		Chunk chunk = new Chunk(header);
+		
+		if (body != null) {
+			chunk.setChunkSize((int)body.length);
+			int space_tmp = space_use;
+			space_use = space_tmp + body.length;
+		}
+		chunks.addChunk(chunk);
+		chunks_save.put(header.getFileId(), chunks);
 	}
 
-	public boolean chunkIsStored(String fileId, int chunkNo) {
-		ChunksList chunksList = chunksSaved.get(fileId) != null ? chunksSaved.get(fileId) : null;
-		if (chunksList == null) {
-			System.out.println("ChunksList not found");
+
+	public boolean check_stored(String fileId, int chunk_number) {
+		
+		List_of_chunks list_chunks = null;
+		if(chunks_save.get(fileId) != null)
+			list_chunks = chunks_save.get(fileId);
+		
+		if (list_chunks == null) {
 			return false;
 		}
-		for (int i = 0; i < chunksList.size(); i++)  {
-			if (chunksList.get(i).getChunkNo() == chunkNo)
+		for (int i = 0; i < list_chunks.size(); i++)  {
+			if (list_chunks.get(i).getChunkNo() == chunk_number)
 				return true;
 		}
-		System.out.println("ChunkNo not found");
+		System.out.println("Chunk not stored");
 		return false;
 	}
 
-	public void addToReceivedStoreMessages(Header header) {
+	public void add_receive_message(Header header) {
 		Chunk chunk = new Chunk(header);
-		ArrayList<Header> headers = receivedStoreMessages.get(chunk) != null ? receivedStoreMessages.get(chunk) : new ArrayList<Header>();
+		ArrayList<Header> headers = null;
+		if(stored_messages.get(chunk) != null)
+			headers = stored_messages.get(chunk);
+		else
+			headers = new ArrayList<Header>();
+		
 		if(!headers.contains(header)) {
 			headers.add(header);
-			receivedStoreMessages.put(chunk, headers);
+			stored_messages.put(chunk, headers);
 		}
-		
 	}
 
-	public byte[] getChunkBody(String fileId, int chunkNo) throws IOException {
-		Path restorableChunk = Paths.get(chunks.getPath() + "/" + fileId + "/" + chunkNo + ".data");
-		return Files.readAllBytes(restorableChunk);
+	public byte[] get_chunk_body(String fileId, int chunkNo) throws IOException {
+		Path chunk = Paths.get(chunks.getPath() + "/" + fileId + "/" + chunkNo + ".data");
+		return Files.readAllBytes(chunk);
 	}	
 
-	public void clearStoredChunks(Header header) {
-		if (chunksSaved.get(header.getFileId()) != null) {
-			chunksSaved.remove(header.getFileId());
+	public void clear_store(Header header) {
+		if (chunks_save.get(header.getFileId()) != null) {
+			chunks_save.remove(header.getFileId());
 		}
 		
 	}
 
-	public void saveRestoredChunk(String file_name, byte[] bodyByteArray) throws IOException {
-		FileInfo fileInfo = backedUpFiles.get(file_name);
-		Restore.getNew_output().write(bodyByteArray);
-		int size = 64*1000;
-		if (bodyByteArray.length < size) {
-			Peer.getMdrChannel().setWaitingChunks(false);
-			Restore.getNew_output().close();
-			System.out.println("File was restored!");
-			if (Restore.get_number_of_chunks() != fileInfo.getNumberOfChunks()){
-					System.out.println("The number of received chunks doesn't match the number of chunks in this file");
-				}
-			Restore.loadDefaults();
-		} else {
-			Restore.inc_number_of_chunks();
-			Restore.sendChunk();
-		}
-		
-	}
-
-	public int deleteChunk(Chunk chunk) {
+	public int delete_chunk(Chunk chunk) {
 		File file = new File(chunks.getPath() + "/" + chunk.getFileId() + "/" + chunk.getChunkNo() + ".data");
 		int size = (int) file.length();
-		if(!file.delete()){
-			System.out.println("Could not delete chunk.");
-			return 0;
+		if(file.delete()){
+			List_of_chunks all_chunks = chunks_save.get(chunk.getFileId());
+			all_chunks.remove(chunk);
+			McChannel.sendRemoved(chunk);
+			int space_tmp = space_use;
+			space_use = space_tmp - size;
+			return size;
 		}
-		deleteFromChunksSaved(chunk);
-		McChannel.sendRemoved(chunk);
-		usedSpace -= size;
-		return size;
+		System.out.println("Cant delete chunk.");
+		return 0;
 		
 	}
 
-	private void deleteFromChunksSaved(Chunk chunk) {
-		ChunksList chunks = chunksSaved.get(chunk.getFileId());
-		chunks.remove(chunk);
-	}
-
-	public Chunk removeFromReceivedStoreMessages(Header header) {
+	public Chunk delete_store_message(Header header) {
+		
 		header.setMessageType("STORED");
-		Chunk chunkInfo = new Chunk(header);
-		ArrayList<Header> headers = receivedStoreMessages.get(chunkInfo) != null ? receivedStoreMessages.get(chunkInfo) : new ArrayList<Header>();
+		Chunk chunk = new Chunk(header);
+
+		ArrayList<Header> headers = null;
+		if(stored_messages.get(chunk) != null)
+			headers = stored_messages.get(chunk);
+		else
+			new ArrayList<Header>();
+		
 		if(headers.contains(header)) {
 			headers.remove(header);
-		} 
-		boolean iHaveIt = chunksSaved.get(header.getFileId()) != null  && chunksSaved.get(header.getFileId()).contains(chunkInfo) ? true : false;
-		if (!iHaveIt) {
-			System.out.println("I don't have this chunk");
-			return null;
 		}
+		
+		if((chunks_save.get(header.getFileId()) == null)  || (!chunks_save.get(header.getFileId()).contains(chunk))){
+			System.out.println("I don't have this chunk");
+			return null;}
+
 		int replication = headers.size() + 1;
-		int replicationDeg = -1;
-		for (Chunk info : chunksSaved.get(header.getFileId())) {
-			if (info.equals(chunkInfo)) {
-				replicationDeg = info.getReplicationDeg();
-				if (replication < replicationDeg)
+		int replication_deg = -1;
+		
+		for (Chunk info : chunks_save.get(header.getFileId())) {
+			if (info == chunk) {
+				replication_deg = info.getReplicationDeg();
+				if (replication < replication_deg)
 					return info;
 				else
 					break;

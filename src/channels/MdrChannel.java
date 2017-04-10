@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 
+import peers.FileManage;
 import peers.Peer;
 import subprotocols.Restore;
 import utilities.Header;
@@ -47,7 +48,7 @@ public class MdrChannel extends Channel{
 								//Handle
 								int size = 64*1000;
 								if (bodyByteArray == null || (bodyByteArray.length <= size && chunkNum == Restore.get_number_of_chunks())) {
-									Peer.getData().saveRestoredChunk(Restore.getFile_name(), bodyByteArray);
+									save_chunk_restore(Restore.getFile_name(), bodyByteArray);
 								}
 								else{
 									System.out.println("Cant restore");
@@ -65,18 +66,23 @@ public class MdrChannel extends Channel{
 		}
     }
     
-    
-	private void handleChunk(int chunkNum, byte[] bodyByteArray) throws IOException {
+    public void save_chunk_restore(String file_name, byte[] body) throws IOException {
+		FileManage file = Peer.getData().get_file_backup().get(file_name);
+		Restore.getNew_output().write(body);
 		int size = 64*1000;
-		if (bodyByteArray == null || (bodyByteArray.length <= size && chunkNum == Restore.get_number_of_chunks())) {
-			Peer.getData().saveRestoredChunk(Restore.getFile_name(), bodyByteArray);
-		}
-		else{
-			System.out.println("Chunk Num = " + chunkNum + " vs Stored chunk Num = " + Restore.get_number_of_chunks());
-			System.out.println("The received chunk has" + bodyByteArray.length + " bytes.");
+		if (body.length < size) {
+			Peer.getMdrChannel().setWaitingChunks(false);
+			Restore.getNew_output().close();
+			System.out.println("Restore finish!");
+			if (Restore.get_number_of_chunks() != file.getNumberOfChunks()){
+					System.out.println("The number of received chunks is different the number of chunks in this file");
+				}
+			Restore.loadDefaults();
+		} else {
+			Restore.inc_number_of_chunks();
+			Restore.sendChunk();
 		}
 	}
-	
 
 	public void setWaitingChunks(boolean chunks_waiting) {
 		this.chunks_waiting = chunks_waiting;

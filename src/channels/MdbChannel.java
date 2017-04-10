@@ -6,7 +6,7 @@ import java.net.InetAddress;
 import java.util.concurrent.ThreadLocalRandom;
 
 import peers.DataBase;
-import peers.FileInfo;
+import peers.FileManage;
 import peers.Peer;
 import utilities.Header;
 import utilities.Message;
@@ -46,7 +46,7 @@ public class MdbChannel extends Channel{
 						switch (message_type) {
 						case "PUTCHUNK":
 							System.out.println("PUTCHUNK");
-							if (DataBase.repDegAchieved(header)) {
+							if (DataBase.replication_complete(header)) {
 								System.out.println("ReplicationDeg achived");
 								break;
 							}
@@ -55,12 +55,12 @@ public class MdbChannel extends Channel{
 							//Handle
 					    	
 							// Check if the file was not backed up by this peer
-							for (FileInfo fileInfo : Peer.getData().getBackedUpFiles().values()) 
+							for (FileManage fileInfo : Peer.getData().get_file_backup().values()) 
 							    if (fileInfo.getFileId().equals(header.getFileId()))
 							    	return;
 							
 							//save chunk
-							Peer.getData().saveChunk(header, bodyByteArray);
+							Peer.getData().save_chunk(header, bodyByteArray);
 							
 							//reply
 							String version = header.getVersion();

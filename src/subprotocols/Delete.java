@@ -18,7 +18,7 @@ public class Delete extends Thread{
 	public void run() {
 		File file = new File("../res/" + file_name);
 		
-		String version = "1.0";
+		String version = Peer.getProtocole_version();
 		String peer_id = Peer.getPeer_id();
 		String file_id = getFileId(file);
 		
@@ -31,7 +31,7 @@ public class Delete extends Thread{
 		}else{
 			System.out.println("Deleted Failed!");
 		}
-		Peer.getData().getBackedUpFiles().remove(file.getName());
+		Peer.getData().get_file_backup().remove(file.getName());
 	}
 	
 	//Get File Id

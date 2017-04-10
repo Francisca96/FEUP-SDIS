@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import utilities.Chunk;
 
-public class ChunksList extends ArrayList<Chunk> implements Serializable {
+public class List_of_chunks extends ArrayList<Chunk> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 

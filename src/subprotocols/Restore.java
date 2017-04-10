@@ -3,7 +3,7 @@ package subprotocols;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
-import peers.FileInfo;
+import peers.FileManage;
 import peers.Peer;
 import utilities.Header;
 import utilities.Message;
@@ -28,12 +28,12 @@ public class Restore extends Thread{
 	}
 	
 	public void run(){
-		if (!Peer.getData().getBackedUpFiles().containsKey(file_name)) {
+		if (!Peer.getData().get_file_backup().containsKey(file_name)) {
 			System.out.println("File not backed up");
 			return;
 		}
 		
-		FileInfo file = Peer.getData().getBackedUpFiles().get(file_name);
+		FileManage file = Peer.getData().get_file_backup().get(file_name);
 		
 		String peer_id = Peer.getPeer_id();
 		String file_id = file.getFileId();

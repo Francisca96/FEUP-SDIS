@@ -56,19 +56,20 @@ public class McChannel extends Channel{
 						switch (message_type) {
 						case "GETCHUNK":
 							System.out.println("GETCHUNK");
-							if (!Peer.getData().chunkIsStored(header.getFileId(), header.getChunkNo())) {
+							if (!Peer.getData().check_stored(header.getFileId(), header.getChunkNo())) {
 								System.out.println("Chunk is not stored");
 								break;
 							}
 							
 							//Handle
-							String version = "1.0";
+							String version = Peer.getProtocole_version();
 							String peer_id = Peer.getPeer_id();
 							String file_id = header.getFileId();
 							int chunk_number = header.getChunkNo();
 							Header reply_header = new Header("CHUNK", version, peer_id, file_id, chunk_number, 0);
 							
-							byte[] body = Peer.getData().getChunkBody(file_id, chunk_number);		
+							
+							byte[] body = Peer.getData().get_chunk_body(file_id, chunk_number);		
 							
 							Message reply = new Message(Peer.getMdrChannel().getSocket(), Peer.getMdrChannel().getAddr(), reply_header, body);
 							Thread.sleep(ThreadLocalRandom.current().nextInt(0, 400));
@@ -78,11 +79,11 @@ public class McChannel extends Channel{
 						case "STORED":
 							System.out.println("STORED");
 							replies_stored.add(message);
-							Peer.getData().addToReceivedStoreMessages(header);
+							Peer.getData().add_receive_message(header);
 							break;
 						case "DELETE":
 							System.out.println("DELETE");
-							Peer.getData().clearStoredChunks(header);
+							Peer.getData().clear_store(header);
 							break;
 						}
 					} 
@@ -103,7 +104,7 @@ public class McChannel extends Channel{
     //Handle Removed
 	private void removed(Header header) throws InterruptedException, IOException {
 		
-		Chunk chunk = Peer.getData().removeFromReceivedStoreMessages(header);
+		Chunk chunk = Peer.getData().delete_store_message(header);
 		
 		if (chunk != null) {
 			waitting_putchunk = false;
@@ -125,7 +126,7 @@ public class McChannel extends Channel{
 	
 		chunk_tmp = Files.readAllBytes(Paths.get(chunkPath));
 		
-		String version = "1.0";
+		String version = Peer.getProtocole_version();
 		String peer_id = Peer.getPeer_id();
 		String file_id = chunk.getFileId();
 		int chunk_number = chunk.getChunkNo();
@@ -144,7 +145,7 @@ public class McChannel extends Channel{
 
 	public static void sendRemoved(Chunk chunk) {
 		
-		String version = "1.0";
+		String version = Peer.getProtocole_version();
 		String peer_id = Peer.getPeer_id();
 		String file_id = chunk.getFileId();
 		int chunk_number = chunk.getChunkNo();

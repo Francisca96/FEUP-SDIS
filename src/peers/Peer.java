@@ -6,6 +6,7 @@ import subprotocols.Delete;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -20,6 +21,7 @@ public class Peer {
     //Server Id
     private static String peer_id;
     private static int serviceAccessPoint;
+    private static String protocole_version;
     //Ports
     private static int mcPort;
     private static int mdbPort;
@@ -39,7 +41,7 @@ public class Peer {
     private static InitiatorPeer init_peer;
 
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
     	/* Needed for Mac OS X */
         System.setProperty("java.net.preferIPv4Stack", "true");
     	
@@ -66,42 +68,35 @@ public class Peer {
 
     public static void saveData() {
         try {
-            FileOutputStream fileOut =
-                    new FileOutputStream("../data_" + Peer.getPeer_id() + "/data.ser");
-            ObjectOutputStream output = new ObjectOutputStream(fileOut);
+            FileOutputStream file =
+            new FileOutputStream("../database_" + Peer.getPeer_id() + "/database.ser");
+            ObjectOutputStream output = new ObjectOutputStream(file);
             output.writeObject(data);
             output.close();
-            fileOut.close();
+            file.close();
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
 
-    public static void loadData() {
-        try {
-            File dataBase = new File("../data_" + Peer.getPeer_id() + "/data.ser");
+    public static void loadData() throws IOException, ClassNotFoundException {
+            File dataBase = new File("../database_" + Peer.getPeer_id() + "/database.ser");
             if (!dataBase.exists()) {
-                System.out.println("Creating new file.");
-                File dir = new File("../data_" + Peer.getPeer_id());
+                File dir = new File("../database_" + Peer.getPeer_id());
                 dir.mkdirs();
                 dataBase.createNewFile();
                 data = new DataBase();
                 saveData();
                 return;
             }
-            FileInputStream fileIn = new FileInputStream("../data_" + Peer.getPeer_id() + "/data.ser");
+            
+            FileInputStream fileIn = new FileInputStream("../database_" + Peer.getPeer_id() + "/database.ser");
             ObjectInputStream input = new ObjectInputStream(fileIn);
 
             data = (DataBase) input.readObject();
             input.close();
             fileIn.close();
             return;
-        } catch (ClassNotFoundException ex) {
-            System.out.println("Cannot perform input. Class not found.");
-        } catch (IOException ex) {
-            System.out.println("Could not load data, maybe the file does not exist.");
-        }
-        data = null;
     }
 
 
@@ -130,27 +125,33 @@ public class Peer {
     }
 
     private static boolean checkArguments(String[] args) throws UnknownHostException {
-        if (args.length != 5) {
-            System.out.println("Invalid number of arguments! Usage: <peerId> <serviceAccessPoint> <mcAddr>:<mcPort> <mdbAddr>:<mdbPort> <mdrAddr>:<mdrPort>");
+        if (args.length != 6) {
+            System.out.println("Invalid number of arguments! Usage: <ProtocoleVersion> <peerId> <serviceAccessPoint> <mcAddr>:<mcPort> <mdbAddr>:<mdbPort> <mdrAddr>:<mdrPort>");
             return false;
         }
+        
+        setProtocoleVersion(args[0]);
+        setPeer_id(args[1]);
+        serviceAccessPoint = Integer.parseInt(args[2]);
 
-        setPeer_id(args[0]);
-        serviceAccessPoint = Integer.parseInt(args[1]);
+        setMcAddr(InetAddress.getByName(args[3].split(":")[0]));
+        setMdbAddr(InetAddress.getByName(args[4].split(":")[0]));
+        setMdrAddr(InetAddress.getByName(args[5].split(":")[0]));
 
-        setMcAddr(InetAddress.getByName(args[2].split(":")[0]));
-        setMdbAddr(InetAddress.getByName(args[3].split(":")[0]));
-        setMdrAddr(InetAddress.getByName(args[4].split(":")[0]));
-
-        setMcPort(Integer.parseInt(args[2].split(":")[1]));
         setMcPort(Integer.parseInt(args[3].split(":")[1]));
         setMcPort(Integer.parseInt(args[4].split(":")[1]));
+        setMcPort(Integer.parseInt(args[5].split(":")[1]));
 
         return true;
     }
 
 
-    public static String getPeer_id() {
+    private static void setProtocoleVersion(String version) {
+		Peer.protocole_version = version;
+		
+	}
+
+	public static String getPeer_id() {
         return peer_id;
     }
 
@@ -189,4 +190,11 @@ public class Peer {
     public static DataBase getData() {
         return data;
     }
+
+	public static String getProtocole_version() {
+		return protocole_version;
+	}
+    
+    
+    
 }
