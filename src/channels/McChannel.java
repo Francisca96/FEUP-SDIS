@@ -30,7 +30,7 @@ public class McChannel extends Channel{
     //Thread
     public class MulticastThread extends Thread {
 		public void run() {
-			System.out.println("Mc channel");
+			System.out.println("Mc channel listening...");
 			while(true) {
 				try {
 					socket.joinGroup(addr);

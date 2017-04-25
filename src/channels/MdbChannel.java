@@ -20,7 +20,7 @@ public class MdbChannel extends Channel{
     
     public class MdbThread extends Thread {
         public void run() {
-        	System.out.println("Mdb channel");
+        	System.out.println("Mdb channel listening...");
             while(true){
                 try{
                     socket.joinGroup(addr);

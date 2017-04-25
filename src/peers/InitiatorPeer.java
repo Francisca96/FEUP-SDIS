@@ -1,6 +1,5 @@
 package peers;
 
-import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -9,43 +8,30 @@ import java.rmi.server.UnicastRemoteObject;
 import subprotocols.*;
 
 public class InitiatorPeer implements Services {
-    private static String remote_obj_name;
-    private static int serviceAccessPoint;
+    private String remote_obj_name;
+    private int serviceAccessPoint;
 
     public InitiatorPeer(String remote_obj_name, int serviceAccessPoint) {
-        InitiatorPeer.remote_obj_name = remote_obj_name;
-        InitiatorPeer.serviceAccessPoint = serviceAccessPoint;
+        this.remote_obj_name = remote_obj_name;
+        this.serviceAccessPoint = serviceAccessPoint;
+        initRMI();
     }
 
-    public static void main(String args[]) throws UnknownHostException, RemoteException {
-        if (!checkArguments(args)) {
-            return;
-        }
+    private void initRMI() {
 
         try {
-            InitiatorPeer init_peer = new InitiatorPeer(remote_obj_name, serviceAccessPoint);
+            System.setProperty("java.rmi.server.hostname", "192.168.1.5");
 
-            Services service = (Services) UnicastRemoteObject.exportObject(init_peer, serviceAccessPoint);
+            Services service = (Services) UnicastRemoteObject.exportObject(this, serviceAccessPoint);
             LocateRegistry.createRegistry(serviceAccessPoint);
             Registry registry = LocateRegistry.getRegistry(serviceAccessPoint);
-            registry.rebind(remote_obj_name, service);
+            System.out.println("bind: "+remote_obj_name);
+            registry.bind(remote_obj_name, service);
 
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(-1);
         }
-    }
-
-    private static boolean checkArguments(String[] args) throws UnknownHostException {
-        if (args.length != 1) {
-            System.out.println("Invalid number of arguments! Usage: <remote_obj_name>");
-            return false;
-        }
-
-        remote_obj_name = args[0];
-
-        return true;
-
     }
 
     @Override

@@ -8,7 +8,6 @@ import subprotocols.Restore;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -133,7 +132,7 @@ public class Peer {
     }
 
     private static boolean checkArguments(String[] args) throws UnknownHostException {
-        if (args.length != 6) {
+        if (args.length !=6) {
             System.out.println("Invalid number of arguments! Usage: <ProtocoleVersion> <peerId> <serviceAccessPoint> <mcAddr>:<mcPort> <mdbAddr>:<mdbPort> <mdrAddr>:<mdrPort>");
             return false;
         }
@@ -202,7 +201,4 @@ public class Peer {
 	public static String getProtocole_version() {
 		return protocole_version;
 	}
-    
-    
-    
 }

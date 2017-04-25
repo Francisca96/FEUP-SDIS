@@ -21,6 +21,7 @@ public class TestApp {
         Registry registry = LocateRegistry.getRegistry("localhost");
 
         try {
+            System.out.println("lookup: "+remote_obj_name);
             service = (Services) registry.lookup(remote_obj_name);
             switch(operation) {
                 case "BACKUP":

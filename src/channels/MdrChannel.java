@@ -20,7 +20,7 @@ public class MdrChannel extends Channel{
     
     public class MdrThread extends Thread {
 		public void run() {
-			System.out.println("Mdr channel");
+			System.out.println("Mdr channel listening...");
 			while(true) {
 				try {
 					socket.joinGroup(addr);
