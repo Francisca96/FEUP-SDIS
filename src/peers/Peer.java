@@ -8,6 +8,7 @@ import subprotocols.Restore;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -40,6 +41,8 @@ public class Peer {
     private static DatagramSocket socket;
 
     private static InitiatorPeer init_peer;
+    
+    private static boolean protocole;
 
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
@@ -63,7 +66,11 @@ public class Peer {
         mdbChannel.thread.start();
         mdrChannel.thread.start();
         
-        protocoles();
+        if(protocole){
+        	Backup backup = new Backup("text.txt",4);
+        	backup.start();
+        }else
+        	protocoles();
 
     }
 
@@ -132,8 +139,8 @@ public class Peer {
     }
 
     private static boolean checkArguments(String[] args) throws UnknownHostException {
-        if (args.length !=6) {
-            System.out.println("Invalid number of arguments! Usage: <ProtocoleVersion> <peerId> <serviceAccessPoint> <mcAddr>:<mcPort> <mdbAddr>:<mdbPort> <mdrAddr>:<mdrPort>");
+        if (args.length != 7) {
+            System.out.println("Invalid number of arguments! Usage: <ProtocoleVersion> <peerId> <serviceAccessPoint> <mcAddr>:<mcPort> <mdbAddr>:<mdbPort> <mdrAddr>:<mdrPort> protocole");
             return false;
         }
         
@@ -148,6 +155,8 @@ public class Peer {
         setMcPort(Integer.parseInt(args[3].split(":")[1]));
         setMcPort(Integer.parseInt(args[4].split(":")[1]));
         setMcPort(Integer.parseInt(args[5].split(":")[1]));
+        
+        setProtocole(Boolean.parseBoolean(args[6]));
 
         return true;
     }
@@ -201,4 +210,15 @@ public class Peer {
 	public static String getProtocole_version() {
 		return protocole_version;
 	}
+
+	public static boolean isProtocole() {
+		return protocole;
+	}
+
+	public static void setProtocole(boolean protocole) {
+		Peer.protocole = protocole;
+	}
+    
+    
+    
 }
