@@ -52,8 +52,9 @@ public class McChannel extends Channel{
                     byte[] bodyByteArray = getArrayFromOffset(packet.getData(), offsetOfBody, packet.getLength());
 					
                     Message message = new Message(header,bodyByteArray);
-                    System.out.println(message_type);
-					if(Peer.getPeer_id() != sender_id) {
+
+					if(!Peer.getPeer_id().equals(sender_id)) {
+						System.out.println(message_type + "_"+sender_id);
 						switch (message_type) {
 						case "GETCHUNK":
 							if (!Peer.getData().check_stored(header.get_file_id(), header.get_chunk_number())) {
@@ -116,7 +117,7 @@ public class McChannel extends Channel{
 
 	private void prepareChunk(Chunk chunk) throws IOException {
 		String file_name = "chunks_" + Peer.getPeer_id() + "/" + chunk.get_file_id() + "/" + chunk.get_chunk_number() + ".data";
-		String path = "../res/" + file_name;
+		String path = "../files/" + file_name;
 		
 		byte[] chunk_tmp = null;
 	

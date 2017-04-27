@@ -21,7 +21,7 @@ public class Restore extends Thread{
 		this.file_name = file_name;
 		
 		//create output
-		new_output = new FileOutputStream("../res/" + "restore_" + file_name);
+		new_output = new FileOutputStream("../files/" + "restore_" + file_name);
 		
 		//Initiator for file
 		file = new byte[0];

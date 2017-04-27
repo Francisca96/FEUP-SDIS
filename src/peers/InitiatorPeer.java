@@ -20,7 +20,7 @@ public class InitiatorPeer implements Services {
     private void initRMI() {
 
         try {
-            System.setProperty("java.rmi.server.hostname", "192.168.1.5");
+            System.setProperty("java.rmi.server.hostname", "172.30.10.228");
 
             Services service = (Services) UnicastRemoteObject.exportObject(this, serviceAccessPoint);
             LocateRegistry.createRegistry(serviceAccessPoint);

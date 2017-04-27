@@ -8,7 +8,6 @@ import subprotocols.Restore;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -67,8 +66,11 @@ public class Peer {
         mdrChannel.thread.start();
         
         if(protocole){
-        	Backup backup = new Backup("text.txt",4);
-        	backup.start();
+        	//Backup backup = new Backup("rena.gif",1);
+        	//backup.start();
+
+            Delete delete = new Delete("rena.gif");
+        	delete.start();
         }else
         	protocoles();
 
@@ -153,8 +155,8 @@ public class Peer {
         setMdrAddr(InetAddress.getByName(args[5].split(":")[0]));
 
         setMcPort(Integer.parseInt(args[3].split(":")[1]));
-        setMcPort(Integer.parseInt(args[4].split(":")[1]));
-        setMcPort(Integer.parseInt(args[5].split(":")[1]));
+        setMdbPort(Integer.parseInt(args[4].split(":")[1]));
+        setMdrPort(Integer.parseInt(args[5].split(":")[1]));
         
         setProtocole(Boolean.parseBoolean(args[6]));
 
@@ -218,7 +220,13 @@ public class Peer {
 	public static void setProtocole(boolean protocole) {
 		Peer.protocole = protocole;
 	}
-    
-    
-    
+
+
+    public static void setMdbPort(int mdbPort) {
+        Peer.mdbPort = mdbPort;
+    }
+
+    public static void setMdrPort(int mdrPort) {
+        Peer.mdrPort = mdrPort;
+    }
 }

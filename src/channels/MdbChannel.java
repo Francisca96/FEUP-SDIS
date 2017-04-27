@@ -27,6 +27,7 @@ public class MdbChannel extends Channel{
                     
                     //separate header and body from data
                     byte[] buf = new byte[64 * 1000];
+
                     DatagramPacket packet = new DatagramPacket(buf, buf.length);
                     socket.receive(packet);
                     String data = new String(packet.getData(), 0, packet.getLength());
@@ -41,8 +42,7 @@ public class MdbChannel extends Channel{
                     int offsetOfBody = dataArray[0].length() + 4;
                     byte[] bodyByteArray = getArrayFromOffset(packet.getData(), offsetOfBody, packet.getLength());
 
-                    System.out.println(message_type);
-                    if(Peer.getPeer_id() != sender_id) {
+                    if(!(Peer.getPeer_id()).equals(sender_id)) {
 						switch (message_type) {
 						case "PUTCHUNK":
 							if (DataBase.replication_complete(header)) {

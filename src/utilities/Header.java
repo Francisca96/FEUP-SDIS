@@ -18,6 +18,21 @@ public class Header {
         
     }
 
+    @Override
+    public String toString() {
+
+        String string = "";
+        string += this.getMessageType() != null ? this.getMessageType() + " " : "";
+        string += this.getVersion() != null ? this.getVersion() + " " : "";
+        string += this.getSenderId() != null ? this.getSenderId() + " " : "";
+        string += this.get_file_id() != null ? this.get_file_id() + " " : "";
+        string += this.get_chunk_number() + " ";
+        string += this.getReplicationDeg() + " ";
+        string += "\r\n\r\n";
+
+        return string;
+    }
+
     //GETTERS AND SETTERS
     public static String getMessageType() {
         return messageType;

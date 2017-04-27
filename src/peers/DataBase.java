@@ -28,7 +28,7 @@ public class DataBase implements Serializable {
 	
 	public DataBase() {
 		files_backup = new Files_backup();
-		original_final = new File("../res/" + "chunks_" + Peer.getPeer_id());
+		original_final = new File("../files/" + "chunks_" + Peer.getPeer_id());
 		space_use = 0;
 		
 		initialize_hashMap();
@@ -98,7 +98,7 @@ public class DataBase implements Serializable {
 		if(chunks_save.get(header.get_file_id()) != null)
 			chunks = chunks_save.get(header.get_file_id());
 		else
-			new List_of_chunks();
+			chunks = new List_of_chunks();
 			
 		Chunk chunk = new Chunk(header);
 		
@@ -152,7 +152,16 @@ public class DataBase implements Serializable {
 		if (chunks_save.get(header.get_file_id()) != null) {
 			chunks_save.remove(header.get_file_id());
 		}
-		
+		File toDelete = new File (original_final.getPath() + "/" + header.get_file_id());
+		if (toDelete.exists()) {
+			String files[] = toDelete.list();
+			for(String temp : files){
+				File fileDelete = new File(toDelete, temp);
+				fileDelete.delete();
+			}
+			toDelete.delete();
+			System.out.println("Delete folder chunks!");
+		}
 	}
 
 	public int delete_chunk(Chunk chunk) {

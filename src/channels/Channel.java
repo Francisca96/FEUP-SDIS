@@ -51,6 +51,7 @@ public class Channel{
         String version = headerTokens[1];
         String senderId = headerTokens[2];
         String fileId = headerTokens[3];
+        //System.out.println("\n"+headerTokens[4]+"\n");
         int ChunkNo = Integer.parseInt(headerTokens[4]);
         int replicationDeg;
         if(headerTokens.length >= 6)
