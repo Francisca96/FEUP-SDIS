@@ -54,7 +54,7 @@ public class Peer {
         mdbChannel = new MdbChannel(mdbAddr, mdbPort);
         mdrChannel = new MdrChannel(mdrAddr, mdrPort);
         socket = new DatagramSocket();
-        init_peer = new InitiatorPeer(peer_id, serviceAccessPoint);
+        init_peer = new InitiatorPeer(serviceAccessPoint);
 
         loadData();
         

@@ -8,25 +8,23 @@ import java.rmi.server.UnicastRemoteObject;
 import subprotocols.*;
 
 public class InitiatorPeer implements Services {
-    private String remote_obj_name;
-    private int serviceAccessPoint;
+    private int remote_obj_name;
 
-    public InitiatorPeer(String remote_obj_name, int serviceAccessPoint) {
+    public InitiatorPeer(int remote_obj_name) {
         this.remote_obj_name = remote_obj_name;
-        this.serviceAccessPoint = serviceAccessPoint;
         initRMI();
     }
 
     private void initRMI() {
 
         try {
-            System.setProperty("java.rmi.server.hostname", "192.168.1.5");
+            //System.setProperty("java.rmi.server.hostname", "172.30.10.228");
 
-            Services service = (Services) UnicastRemoteObject.exportObject(this, serviceAccessPoint);
-            LocateRegistry.createRegistry(serviceAccessPoint);
-            Registry registry = LocateRegistry.getRegistry(serviceAccessPoint);
+            Services service = (Services) UnicastRemoteObject.exportObject(this, 0);
+            //LocateRegistry.createRegistry(serviceAccessPoint);
+            Registry registry = LocateRegistry.getRegistry();
             System.out.println("bind: "+remote_obj_name);
-            registry.bind(remote_obj_name, service);
+            registry.rebind(""+remote_obj_name, service);
 
         } catch (Exception e) {
             e.printStackTrace();
