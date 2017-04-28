@@ -2,7 +2,6 @@ package subprotocols;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,33 +19,31 @@ public class Backup extends Thread {
     static ArrayList<Header> valid_replies;
 
     public Backup(String fileName, int replicationDeg) {
-        this.file = new File("../res/"+fileName);
+        this.file = new File("../../../files/" +fileName);
         this.replicationDeg = replicationDeg;
     }
 
     public void run() {
     	try{
-    		byte[] file_data = Files.readAllBytes(file.toPath());
-    		
     		//Create Root for file
-        	FileInputStream inputStream = new FileInputStream("../res/" + file.getName());
-        	
-        	//Buf with the max chunk size
+        	FileInputStream inputStream = new FileInputStream(file);
+
+			//Buf with the max chunk size
         	int size = 64 * 1000;
         	byte[] buf = new byte[size];
         	String file_id = getFileId(file);
         	String peer_id = Peer.getPeer_id();
         	
         	String version = Peer.getProtocole_version();
-    		Header header = new Header("PUTCHUNK", version, peer_id, file_id, 0, replicationDeg);
-    		
+
     		int bytesRead = 0;
     		int chunk_number = 0;
     		
     		while ((bytesRead = inputStream.read(buf)) != -1) {
+				Header header = new Header("PUTCHUNK", version, peer_id, file_id, 0, replicationDeg);
     			byte[] body = Arrays.copyOfRange(buf, 0, bytesRead);
-    			Header.setChunkNo(chunk_number);
-    			send_chunk(header, body);
+    			header.setChunkNo(chunk_number);
+				send_chunk(header, body);
     			chunk_number++;
     		}
     		
@@ -54,12 +51,12 @@ public class Backup extends Thread {
     			Peer.getData().get_file_backup().file_mark(file.getName(), new FileManage(file.getName(),file_id, chunk_number, file.length()));
     		}
     		inputStream.close();
-    		System.out.println("Backup finish");
-    		
-    	}catch(IOException e){
-    		System.out.println("The file doesn't exist.");
-    	}
-    }
+    		System.out.println("Backup finish!");
+
+		} catch (IOException e) {
+			System.out.println("The file '" + file.getName() + "' does not exist.");
+		}
+	}
 
 
     public static void send_chunk(Header header, byte[] chunk) {
@@ -68,8 +65,8 @@ public class Backup extends Thread {
 		int waitingTime = 500;
 		
 		//5 is the max chunk retry
-		while (chunksSent < 5) {
-			
+		while (chunksSent < 10) {
+
 			//Create message
 			Message message = new Message(Peer.getMdbChannel().getSocket(), Peer.getMdbChannel().getAddr(), header, chunk);
 			valid_replies = new ArrayList<>();
@@ -156,7 +153,7 @@ public class Backup extends Thread {
 		if(Peer.getData().get_chunks_backup().get(message.getHeader().get_file_id()) != null)
 			chunks = Peer.getData().get_chunks_backup().get(message.getHeader().get_file_id());
 		else
-			new List_of_chunks();
+			chunks = new List_of_chunks();
 		
 		Chunk chunk = new Chunk(message.getHeader(), message.getBody().length);
 		

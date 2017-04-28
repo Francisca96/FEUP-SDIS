@@ -16,21 +16,19 @@ public class Delete extends Thread{
 	}
 	
 	public void run() {
-		File file = new File("../res/" + file_name);
+		File file = new File("../../../files/" + this.file_name);
 		
 		String version = Peer.getProtocole_version();
 		String peer_id = Peer.getPeer_id();
 		String file_id = getFile_id(file);
-		
+
 		Header header = new Header("DELETE", version, peer_id, file_id, 0, 0);
 		Message delete_message = new Message(Peer.getMcChannel().getSocket(), Peer.getMcChannel().getAddr(), header, null);
+
 		new Thread(delete_message).start();
-		
-		if(file.delete()){
-			System.out.println("File deleted!");
-		}else{
-			System.out.println("Deleted Failed!");
-		}
+
+		System.out.println("File chunks deleted!");
+
 		Peer.getData().get_file_backup().remove(file.getName());
 	}
 	
