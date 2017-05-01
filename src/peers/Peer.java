@@ -65,14 +65,7 @@ public class Peer {
         mdbChannel.thread.start();
         mdrChannel.thread.start();
         
-        if(protocole){
-        	//Backup backup = new Backup("rena.gif",1);
-        	//backup.start();
-
-            Delete delete = new Delete("rena.gif");
-        	delete.start();
-        }else
-        	protocoles();
+        protocoles();
 
     }
 
@@ -118,6 +111,7 @@ public class Peer {
             socket.receive(packet);
             protocole = new String(packet.getData(), 0, packet.getLength());
             String[] protocoleArray = protocole.split("\\s+");
+            System.out.println(protocoleArray+"\n");
             switch (protocoleArray[0]) {
                 case "BACKUP":
                     Backup backup = new Backup(protocoleArray[1], Integer.parseInt(protocoleArray[2]));
@@ -141,8 +135,8 @@ public class Peer {
     }
 
     private static boolean checkArguments(String[] args) throws UnknownHostException {
-        if (args.length != 7) {
-            System.out.println("Invalid number of arguments! Usage: <ProtocoleVersion> <peerId> <serviceAccessPoint> <mcAddr>:<mcPort> <mdbAddr>:<mdbPort> <mdrAddr>:<mdrPort> protocole");
+        if (args.length != 6) {
+            System.out.println("Invalid number of arguments! Usage: <ProtocoleVersion> <peerId> <serviceAccessPoint> <mcAddr>:<mcPort> <mdbAddr>:<mdbPort> <mdrAddr>:<mdrPort>");
             return false;
         }
         
@@ -157,8 +151,6 @@ public class Peer {
         setMcPort(Integer.parseInt(args[3].split(":")[1]));
         setMdbPort(Integer.parseInt(args[4].split(":")[1]));
         setMdrPort(Integer.parseInt(args[5].split(":")[1]));
-        
-        setProtocole(Boolean.parseBoolean(args[6]));
 
         return true;
     }
@@ -212,15 +204,6 @@ public class Peer {
 	public static String getProtocole_version() {
 		return protocole_version;
 	}
-
-	public static boolean isProtocole() {
-		return protocole;
-	}
-
-	public static void setProtocole(boolean protocole) {
-		Peer.protocole = protocole;
-	}
-
 
     public static void setMdbPort(int mdbPort) {
         Peer.mdbPort = mdbPort;
