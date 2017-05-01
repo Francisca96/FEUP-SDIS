@@ -2,6 +2,7 @@ package subprotocols;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.rmi.RemoteException;
 
 import peers.FileManage;
 import peers.Peer;
@@ -17,11 +18,11 @@ public class Restore extends Thread{
 	private static int number_of_chunks = 0;
 	private static Message message;
 
-	public Restore(String file_name) throws FileNotFoundException{
+	public Restore(String file_name) throws RemoteException, FileNotFoundException{
 		this.file_name = file_name;
 		
 		//create output
-		new_output = new FileOutputStream("../files/" + "restore_" + file_name);
+		new_output = new FileOutputStream("../../../files/" + "restore_" + file_name);
 		
 		//Initiator for file
 		file = new byte[0];
@@ -38,7 +39,7 @@ public class Restore extends Thread{
 		String peer_id = Peer.getPeer_id();
 		String file_id = file.get_file_id();
 		header = new Header("GETCHUNK", "1.0", peer_id, file_id, 0, 0);
-		
+		System.out.println(header);
 		Peer.getMdrChannel().setWaitingChunks(true);
 		send_chunk();
 	}
@@ -69,6 +70,10 @@ public class Restore extends Thread{
 	}
 
 	public static void send_chunk() {
+		FileManage file = Peer.getData().get_file_backup().get(file_name);
+		String peer_id = Peer.getPeer_id();
+		String file_id = file.get_file_id();
+		header = new Header("GETCHUNK", "1.0", peer_id, file_id, 0, 0);
 		header.setChunkNo(number_of_chunks);
 		message = new Message(Peer.getMcChannel().getSocket(), Peer.getMcChannel().getAddr(), header, null);
 		new Thread(message).start();

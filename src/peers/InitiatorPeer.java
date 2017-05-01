@@ -1,5 +1,6 @@
 package peers;
 
+import java.io.FileNotFoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -40,7 +41,9 @@ public class InitiatorPeer implements Services {
     }
 
     @Override
-    public String restore(String file_name) throws RemoteException {
+    public String restore(String file_name) throws RemoteException, FileNotFoundException {
+        Restore restore = new Restore(file_name);
+        restore.run();
         return null;
     }
 

@@ -70,11 +70,14 @@ public class MdrChannel extends Channel{
     public void save_chunk_restore(String file_name, byte[] body) throws IOException {
 		FileManage file = Peer.getData().get_file_backup().get(file_name);
 		Restore.getNew_output().write(body);
-		int size = 64*1000;
+		int size = 63914;
+		System.out.println(body.length);
 		if (body.length < size) {
 			Peer.getMdrChannel().setWaitingChunks(false);
 			Restore.getNew_output().close();
 			System.out.println("Restore finish!");
+			System.out.println(Restore.get_number_of_chunks());
+			System.out.println(file.get_chunks_number());
 			if (Restore.get_number_of_chunks() != file.get_chunks_number()){
 					System.out.println("The number of received chunks is different the number of chunks in this file");
 				}
