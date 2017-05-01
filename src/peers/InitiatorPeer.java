@@ -46,6 +46,8 @@ public class InitiatorPeer implements Services {
 
     @Override
     public String delete(String file_name) throws RemoteException {
+        Delete delete = new Delete(file_name);
+        delete.run();
         return null;
     }
 

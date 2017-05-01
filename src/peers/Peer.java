@@ -64,9 +64,6 @@ public class Peer {
         mcChannel.thread.start();
         mdbChannel.thread.start();
         mdrChannel.thread.start();
-        
-        protocoles();
-
     }
 
     public static void saveData() {
@@ -103,7 +100,7 @@ public class Peer {
     }
 
 
-    private static void protocoles() throws IOException {
+    /*private static void protocoles() throws IOException {
         String protocole = "";
         while (true) {
             byte[] buf = new byte[256];
@@ -111,7 +108,6 @@ public class Peer {
             socket.receive(packet);
             protocole = new String(packet.getData(), 0, packet.getLength());
             String[] protocoleArray = protocole.split("\\s+");
-            System.out.println(protocoleArray+"\n");
             switch (protocoleArray[0]) {
                 case "BACKUP":
                     Backup backup = new Backup(protocoleArray[1], Integer.parseInt(protocoleArray[2]));
@@ -132,7 +128,7 @@ public class Peer {
             }
         }
 
-    }
+    }*/
 
     private static boolean checkArguments(String[] args) throws UnknownHostException {
         if (args.length != 6) {
