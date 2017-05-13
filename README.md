@@ -1,5 +1,5 @@
 # FEUP-SDIS
-Francisca Paupério
+Francisca Paupério <br/>
 Vasco Ribeiro
 
 PROJECT 1
