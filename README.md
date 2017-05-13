@@ -2,13 +2,21 @@
 Francisca Paupério
 Vasco Ribeiro
 
-Deverá compilar todos os ficheiros correndo o "sh compile.sh".
-Dirigir agora para a pasta src e na linha de comando deverá abrir um peer:
+PROJECT 1
 
-java peers.Peer <Server ID> <MC> <MC port> <MDB> <MDB port> <MDR> <MDR port>
+	Deverá compilar todos os ficheiros correndo o "sh compile.sh".
+	Abrir o terminal na pasta com os ficheiros ".class" e correr cada peer através da seguinte linha de comandos:
 
-Para correr o TestApp será assim:
+	java peers.Peer <ProtocoleVersion> <peerId> <serviceAccessPoint> <mcAddr>:<mcPort> <mdbAddr>:<mdbPort> <mdrAddr>:<mdrPort>
 
-java launcher.TestApp <peer_ap> <sub_protocol> <opnd_1> <opnd_2>
+	example: java peers.Peer 1 1 2225 224.0.0.1:4445 224.0.0.2:4446 224.0.0.3:4447
 
-Obs: Reclaim not Complete and 1 error in RMI to run.
+	Para correr a TestApp:
+
+	java  TestApp <peer_ap> <sub_protocol> <opnd_1> <opnd_2>
+
+	example: java TestApp 2223 BACKUP rena.gif 1
+
+	Obs: Reclaim not Complete.
+
+PROJECT 2
