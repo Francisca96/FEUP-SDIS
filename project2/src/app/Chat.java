@@ -2,7 +2,6 @@ package app;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -15,9 +14,29 @@ import java.util.Observable;
 import java.util.Observer;
 
 
-
 public class Chat {
 
+    public static void main(String[] args) {
+        String server = args[0]; //server = "localhost"
+        int port = 2222;
+        ChatAccess access = new ChatAccess();
+
+        JFrame frame = new ChatFrame(access);
+        frame.setTitle("ChatRoom");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setResizable(true);
+        frame.setVisible(true);
+
+        try {
+            access.InitSocket(server, port);
+        } catch (IOException ex) {
+            System.out.println("Could not connect to " + server + ":" + port);
+            ex.printStackTrace();
+            System.exit(0);
+        }
+    }
 
     static class ChatAccess extends Observable {
         private Socket socket;
@@ -33,20 +52,17 @@ public class Chat {
             socket = new Socket(server, port);
             outputStream = socket.getOutputStream();
 
-            Thread receivingThread = new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        BufferedReader reader = new BufferedReader(
-                                new InputStreamReader(socket.getInputStream()));
-                        String line;
-                        while ((line = reader.readLine()) != null)
-                            notifyObservers(line);
-                    } catch (IOException ex) {
-                        notifyObservers(ex);
-                    }
+            Thread receivingThread = new Thread(() -> {
+                try {
+                    BufferedReader reader = new BufferedReader(
+                            new InputStreamReader(socket.getInputStream()));
+                    String line;
+                    while ((line = reader.readLine()) != null)
+                        notifyObservers(line);
+                } catch (IOException ex) {
+                    notifyObservers(ex);
                 }
-            };
+            });
             receivingThread.start();
         }
 
@@ -62,7 +78,6 @@ public class Chat {
             }
         }
 
-
         public void close() {
             try {
                 socket.close();
@@ -72,7 +87,7 @@ public class Chat {
         }
     }
 
-    /** Chat client UI */
+    // Interface gráfica
     static class ChatFrame extends JFrame implements Observer {
 
         private JTextArea textArea;
@@ -86,7 +101,7 @@ public class Chat {
             buildGUI();
         }
 
-        /** User interface */
+        // User interface
         private void buildGUI() {
             textArea = new JTextArea(20, 50);
             textArea.setEditable(false);
@@ -101,16 +116,13 @@ public class Chat {
             box.add(inputTextField);
             box.add(sendButton);
 
-
-            ActionListener sendListener = new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    String str = inputTextField.getText();
-                    if (str != null && str.trim().length() > 0)
-                        chatAccess.send(str);
-                    inputTextField.selectAll();
-                    inputTextField.requestFocus();
-                    inputTextField.setText("");
-                }
+            ActionListener sendListener = e -> {
+                String str = inputTextField.getText();
+                if (str != null && str.trim().length() > 0)
+                    chatAccess.send(str);
+                inputTextField.selectAll();
+                inputTextField.requestFocus();
+                inputTextField.setText("");
             };
             inputTextField.addActionListener(sendListener);
             sendButton.addActionListener(sendListener);
@@ -123,37 +135,12 @@ public class Chat {
             });
         }
 
-
         public void update(Observable o, Object arg) {
             final Object finalArg = arg;
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    textArea.append(finalArg.toString());
-                    textArea.append("\n");
-                }
+            SwingUtilities.invokeLater(() -> {
+                textArea.append(finalArg.toString());
+                textArea.append("\n");
             });
-        }
-    }
-
-    public static void main(String[] args) {
-        String server = args[0]; //server = "localhost"
-        int port =2222;
-        ChatAccess access = new ChatAccess();
-
-        JFrame frame = new ChatFrame(access);
-        frame.setTitle("ChatRoom");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setLocationRelativeTo(null);
-        frame.setResizable(true);
-        frame.setVisible(true);
-
-        try {
-            access.InitSocket(server,port);
-        } catch (IOException ex) {
-            System.out.println("Não conseguiu conectar a " + server + ":" + port);
-            ex.printStackTrace();
-            System.exit(0);
         }
     }
 }

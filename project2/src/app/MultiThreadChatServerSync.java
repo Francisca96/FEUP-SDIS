@@ -3,7 +3,6 @@ package app;
 import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -28,18 +27,14 @@ public class MultiThreadChatServerSync {
             portNumber = Integer.valueOf(args[0]).intValue();
         }
 
-    /*
-     * Abrir servidor na porta 2222
-     */
+        // Abrir servidor na porta 2222
         try {
             serverSocket = new ServerSocket(portNumber);
         } catch (IOException e) {
             System.out.println(e);
         }
 
-    /*
-     * Criar socket para cada cliente
-     */
+        // Criar uma socket para cada cliente
         while (true) {
             try {
                 clientSocket = serverSocket.accept();
