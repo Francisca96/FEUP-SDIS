@@ -19,7 +19,7 @@ public class MultiThreadChatServerSync {
     public static void main(String[] args) {
 
         // Numero da porta pode ser variavel
-        int portNumber = 2222;
+        int portNumber = Integer.parseInt(args[0]);
         if (args.length < 1) {
             //System.out.println("Usage: java MultiThreadChatServerSync <portNumber>\n");
             System.out.println("Using port = " + portNumber);
@@ -27,7 +27,7 @@ public class MultiThreadChatServerSync {
             portNumber = Integer.valueOf(args[0]).intValue();
         }
 
-        // Abrir servidor na porta 2222
+        // Abrir servidor na porta
         try {
             serverSocket = new ServerSocket(portNumber);
         } catch (IOException e) {

@@ -18,8 +18,12 @@ public class Chat {
 
     public static void main(String[] args) {
         String server = args[0]; //server = "localhost"
-        int port = 2222;
         ChatAccess access = new ChatAccess();
+        int port;
+        if (args[1] == "Room1") {
+            port = 2222;
+        } else
+            port = 2223;
 
         JFrame frame = new ChatFrame(access);
         frame.setTitle("ChatRoom");
