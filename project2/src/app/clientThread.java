@@ -4,6 +4,9 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 public class clientThread extends Thread {
 
@@ -52,12 +55,16 @@ public class clientThread extends Thread {
                 for (int i = 0; i < max; i++) {
                     if (threads[i] != null && threads[i] != this) {
                         threads[i].os.println("     " + name
-                                + " get in!!!");
+                                + " got in!!!");
                     }
                 }
             }
             // Inicio da conversa
             while (true) {
+                Calendar cal = Calendar.getInstance();
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+                String hours = sdf.format(cal.getTime());
+
                 String line = is.readLine();
                 if (line.startsWith("/out")) {
                     break;
@@ -74,9 +81,9 @@ public class clientThread extends Thread {
                                     if (threads[i] != null && threads[i] != this
                                             && threads[i].clientName != null
                                             && threads[i].clientName.equals(words[0])) {
-                                        threads[i].os.println(name + ": " + words[1]);
+                                        threads[i].os.println("<" + hours + "> " + name + ": " + words[1]);
                                         // Confirmação da mensagem
-                                        this.os.println(name + ": " + words[1]);
+                                        this.os.println("<" + hours + "> " + name + ": " + words[1]);
                                         break;
                                     }
                                 }
@@ -88,7 +95,7 @@ public class clientThread extends Thread {
                     synchronized (this) {
                         for (int i = 0; i < max; i++) {
                             if (threads[i] != null && threads[i].clientName != null) {
-                                threads[i].os.println(name + ": " + line);
+                                threads[i].os.println("<" + hours + "> " + name + ": " + line);
                             }
                         }
                     }
