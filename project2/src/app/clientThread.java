@@ -1,21 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package app;
 
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
-
-/**
- * @author vascoribeiro
- */
-
-
 
 public class clientThread extends Thread{
 
@@ -42,18 +30,18 @@ public class clientThread extends Thread{
       os = new PrintStream(clientSocket.getOutputStream());
       String name;
       while (true) {
-        os.println("Introduza o seu nome!");
+        os.println("Hello! \nTell us your name... ");
         name = is.readLine().trim();
         if (name.indexOf('@') == -1) {
           break;
         } else {
-          os.println("O nome nao pode conter o caracter '@'.");
+          os.println("The name can not contain the character '@'.");
         }
       }
 
       /* Novo Cliente */
-      os.println("Bem Vindo " + name
-          + " ao nosso chat.\nPara sair insira /sair numa linha nova.");
+      os.println("\nWelcome " + name
+          + "!\nTo leave insert /out in a new line.");
       synchronized (this) {
         for (int i = 0; i < max; i++) {
           if (threads[i] != null && threads[i] == this) {
@@ -63,15 +51,15 @@ public class clientThread extends Thread{
         }
         for (int i = 0; i < max; i++) {
           if (threads[i] != null && threads[i] != this) {
-            threads[i].os.println("*** Novo utilizador " + name
-                + " entrou na sala !!! ***");
+            threads[i].os.println("     " + name
+                + " get in!!!");
           }
         }
       }
       /* Inicio da conversa */
       while (true) {
         String line = is.readLine();
-        if (line.startsWith("/sair")) {
+        if (line.startsWith("/out")) {
           break;
         }
 
@@ -86,11 +74,11 @@ public class clientThread extends Thread{
                   if (threads[i] != null && threads[i] != this
                       && threads[i].clientName != null
                       && threads[i].clientName.equals(words[0])) {
-                    threads[i].os.println("<" + name + "> " + words[1]);
+                    threads[i].os.println(name + ": " + words[1]);
                     /*
                      * Confirmação da mensagem
                      */
-                    this.os.println(">" + name + "> " + words[1]);
+                    this.os.println(name + ": " + words[1]);
                     break;
                   }
                 }
@@ -102,7 +90,7 @@ public class clientThread extends Thread{
           synchronized (this) {
             for (int i = 0; i < max; i++) {
               if (threads[i] != null && threads[i].clientName != null) {
-                threads[i].os.println("<" + name + "> " + line);
+                threads[i].os.println(name + ": " + line);
               }
             }
           }
@@ -112,12 +100,12 @@ public class clientThread extends Thread{
         for (int i = 0; i < max; i++) {
           if (threads[i] != null && threads[i] != this
               && threads[i].clientName != null) {
-            threads[i].os.println("*** O utilizador " + name
-                + " deixou o chat !!! ***");
+            threads[i].os.println("     " + name
+                + " left the chat.");
           }
         }
       }
-      os.println("*** Adeus " + name + " ***");
+      os.println("\nBye bye " + name + "!");
 
       /*
        * Limpar cliente para ganhar novo lugar

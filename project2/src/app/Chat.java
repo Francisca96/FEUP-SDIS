@@ -1,9 +1,5 @@
 package app;
 
-/**
- * @author vascoribeiro
- */
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -95,12 +91,13 @@ public class Chat {
             textArea = new JTextArea(20, 50);
             textArea.setEditable(false);
             textArea.setLineWrap(true);
+            textArea.setBackground(new Color(108, 183, 242));
             add(new JScrollPane(textArea), BorderLayout.CENTER);
 
             Box box = Box.createHorizontalBox();
             add(box, BorderLayout.SOUTH);
             inputTextField = new JTextField();
-            sendButton = new JButton("Enviar");
+            sendButton = new JButton("Send");
             box.add(inputTextField);
             box.add(sendButton);
 
@@ -139,16 +136,16 @@ public class Chat {
     }
 
     public static void main(String[] args) {
-        String server = args[0];
+        String server = args[0]; //server = "localhost"
         int port =2222;
         ChatAccess access = new ChatAccess();
 
         JFrame frame = new ChatFrame(access);
-        frame.setTitle("Chat - conectado to " + server + ":" + port);
+        frame.setTitle("ChatRoom");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setLocationRelativeTo(null);
-        frame.setResizable(false);
+        frame.setResizable(true);
         frame.setVisible(true);
 
         try {
