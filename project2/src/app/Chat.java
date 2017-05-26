@@ -1,6 +1,7 @@
 package app;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -94,6 +95,7 @@ public class Chat {
     // Interface gráfica
     static class ChatFrame extends JFrame implements Observer {
 
+        private JEditorPane usersArea;
         private JTextArea textArea;
         private JTextField inputTextField;
         private JButton sendButton;
@@ -112,6 +114,13 @@ public class Chat {
             textArea.setLineWrap(true);
             textArea.setBackground(new Color(108, 183, 242));
             add(new JScrollPane(textArea), BorderLayout.CENTER);
+
+            usersArea = new JEditorPane();
+            usersArea.setEditable(false);
+            usersArea.setBackground(new Color(141, 141, 145));
+            usersArea.setSize(200, 10);
+            usersArea.setBorder();
+            add(usersArea, BorderLayout.EAST);
 
             Box box = Box.createHorizontalBox();
             add(box, BorderLayout.SOUTH);
