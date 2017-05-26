@@ -1,7 +1,6 @@
 package app;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -118,8 +117,7 @@ public class Chat {
             usersArea = new JEditorPane();
             usersArea.setEditable(false);
             usersArea.setBackground(new Color(141, 141, 145));
-            usersArea.setSize(200, 10);
-            usersArea.setBorder();
+            usersArea.setSize(150, 10);
             add(usersArea, BorderLayout.EAST);
 
             Box box = Box.createHorizontalBox();
