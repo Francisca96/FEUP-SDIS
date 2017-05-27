@@ -118,6 +118,7 @@ public class Chat {
             usersArea.setEditable(false);
             usersArea.setBackground(new Color(141, 141, 145));
             usersArea.setSize(150, 10);
+            usersArea.setText("WHO'S ONLINE?\n\n");
             add(usersArea, BorderLayout.EAST);
 
             Box box = Box.createHorizontalBox();

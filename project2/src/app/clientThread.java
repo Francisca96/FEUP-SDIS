@@ -6,7 +6,6 @@ import java.io.PrintStream;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 public class clientThread extends Thread {
 
@@ -54,7 +53,7 @@ public class clientThread extends Thread {
                 }
                 for (int i = 0; i < max; i++) {
                     if (threads[i] != null && threads[i] != this) {
-                        threads[i].os.println("     " + name
+                        threads[i].os.println(name
                                 + " got in!!!");
                     }
                 }
@@ -105,7 +104,7 @@ public class clientThread extends Thread {
                 for (int i = 0; i < max; i++) {
                     if (threads[i] != null && threads[i] != this
                             && threads[i].clientName != null) {
-                        threads[i].os.println("     " + name
+                        threads[i].os.println(name
                                 + " left the chat.");
                     }
                 }
