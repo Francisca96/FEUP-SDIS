@@ -10,8 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 
 
 public class Chat {
@@ -94,16 +93,32 @@ public class Chat {
     // Interface gráfica
     static class ChatFrame extends JFrame implements Observer {
 
+        private static ChatFrame instance = null;
+
+        protected ChatFrame() {
+            names = new ArrayList<>();
+            // Exists only to defeat instantiation.
+        }
+
+        public static ChatFrame getInstance() {
+            if (instance == null) {
+                instance = new ChatFrame();
+            }
+            return instance;
+        }
+
         private JEditorPane usersArea;
         private JTextArea textArea;
         private JTextField inputTextField;
         private JButton sendButton;
         private ChatAccess chatAccess;
+        public ArrayList<String> names;
 
         public ChatFrame(ChatAccess chatAccess) {
             this.chatAccess = chatAccess;
             chatAccess.addObserver(this);
             buildGUI();
+            names = new ArrayList<>();
         }
 
         // User interface
@@ -118,7 +133,8 @@ public class Chat {
             usersArea.setEditable(false);
             usersArea.setBackground(new Color(141, 141, 145));
             usersArea.setSize(150, 10);
-            usersArea.setText("WHO'S ONLINE?\n\n");
+            if (usersArea != null)
+                usersArea.setText("WHO'S ONLINE?\n\n");
             add(usersArea, BorderLayout.EAST);
 
             Box box = Box.createHorizontalBox();
@@ -147,6 +163,8 @@ public class Chat {
             });
         }
 
+        //int length = 0;
+
         public void update(Observable o, Object arg) {
             final Object finalArg = arg;
             SwingUtilities.invokeLater(() -> {
@@ -154,5 +172,14 @@ public class Chat {
                 textArea.append("\n");
             });
         }
+
+        /*public void refresh() {
+            for (int i = 0; i < names.size(); i++) {
+                usersArea.setText(usersArea.getText() + names.get(i) + "\n");
+                System.out.println(names.get(i));
+            }
+            this.revalidate();
+            length = names.size();
+        }*/
     }
 }

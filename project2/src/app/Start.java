@@ -18,10 +18,10 @@ public class Start {
         Object selecao = JOptionPane.showInputDialog(null, "Login as: ", "Chat", JOptionPane.QUESTION_MESSAGE, icon, values, "Server1");
         if (selecao.equals("Server1")) {
             String[] arguments = new String[]{"2222"};
-            new MultiThreadChatServerSync().main(arguments);
+            new Server().main(arguments);
         } else if (selecao.equals("Server2")) {
             String[] arguments = new String[]{"2223"};
-            new MultiThreadChatServerSync().main(arguments);
+            new Server().main(arguments);
         } else if (selecao.equals("User")) {
             Object room = JOptionPane.showInputDialog(null, "Choose your ChatRoom: ", "Chat", JOptionPane.QUESTION_MESSAGE, icon, rooms, "Room1");
             String chosenRoom = String.valueOf(room);

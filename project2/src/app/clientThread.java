@@ -7,16 +7,16 @@ import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-public class clientThread extends Thread {
+public class ClientThread extends Thread {
 
     private String clientName = null;
     private DataInputStream is = null;
     private PrintStream os = null;
     private Socket clientSocket = null;
-    private final clientThread[] clientes;
+    private final ClientThread[] clientes;
     private int max;
 
-    public clientThread(Socket clientSocket, clientThread[] clientes) {
+    public ClientThread(Socket clientSocket, ClientThread[] clientes) {
         this.clientSocket = clientSocket;
         this.clientes = clientes;
         max = clientes.length;
@@ -24,7 +24,7 @@ public class clientThread extends Thread {
 
     public void run() {
         int max = this.max;
-        clientThread[] threads = this.clientes;
+        ClientThread[] threads = this.clientes;
 
         try {
 
@@ -40,6 +40,9 @@ public class clientThread extends Thread {
                     os.println("The name can not contain the character '@'.");
                 }
             }
+
+            //Chat.ChatFrame.getInstance().names.add(name);
+            //Chat.ChatFrame.getInstance().refresh();
 
             // Novo Cliente
             os.println("\nWelcome " + name
